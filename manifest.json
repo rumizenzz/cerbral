@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-04-18",
+  "cerbral_version": "0.1.0",
+  "models": {
+    "recommended_by_tier": {
+      "8gb": {
+        "ollama": "hermes3:3b",
+        "reason": "Nous-tuned for Hermes Agent tool-call format, ~2GB on disk, fits 8GB RAM with 64K context."
+      },
+      "16gb": {
+        "ollama": "qwen2.5:7b-instruct",
+        "reason": "Good balance of reasoning and tool-use at 7B. ~5GB on disk."
+      },
+      "32gb": {
+        "ollama": "qwen2.5:14b-instruct",
+        "reason": "Stronger reasoning; fits 32GB systems comfortably. ~9GB on disk."
+      },
+      "64gb_plus": {
+        "ollama": "qwen2.5:27b-instruct",
+        "reason": "TAU2 benchmark leader among local models. ~17GB on disk, needs 32GB+ RAM or a GPU."
+      }
+    },
+    "api_backends_supported": [
+      "openai",
+      "anthropic",
+      "openrouter",
+      "any openai-compatible endpoint"
+    ]
+  },
+  "starters": [
+    {
+      "id": "empty",
+      "name": "Empty (just domain folders)",
+      "repo": null,
+      "description": "Starts you with empty knowledge/ subfolders. You add content."
+    }
+  ],
+  "update_channels": {
+    "stable": {
+      "script_url": "https://raw.githubusercontent.com/rumizenzz/cerbral/main/install.sh"
+    }
+  },
+  "principles_url": "https://github.com/rumizenzz/cerbral/blob/main/PRINCIPLES.md"
+}

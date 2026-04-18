@@ -1,0 +1,57 @@
+# Template .gitignore for a personal cerbral-brain repo.
+# The install.sh downloads this into a new user's $CERBRAL_HOME/.gitignore.
+
+# Mirror-side exclusions
+brain/audio_cache/
+brain/image_cache/
+brain/sandboxes/
+brain/hermes-agent/
+brain/bin/
+brain/sessions/
+brain/checkpoints/
+brain/logs/
+brain/images/
+brain/cron/
+brain/pairing/
+brain/whatsapp/
+brain/state.db
+brain/state.db-shm
+brain/state.db-wal
+brain/processes.json
+brain/auth.json
+brain/auth.lock
+brain/.update_check
+brain/.hermes_history
+brain/.skills_prompt_snapshot.json
+brain/interrupt_debug.log
+brain/**/memories
+
+# Secrets — NEVER commit
+.env
+.env.local
+.env.*.local
+brain/.env
+brain/.env.*
+**/auth.json
+**/*.secrets
+.cerbral-secrets*
+
+# Lockfiles / temp / backup
+**/*.lock
+**/*.tmp
+**/*.bak
+**/~*
+
+# OS / editor junk
+.DS_Store
+**/.DS_Store
+._*
+**/._*
+Thumbs.db
+*.swp
+*.swo
+
+# Script logs
+scripts/mirror.log
+scripts/prune.log
+scripts/*.log

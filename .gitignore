@@ -1,0 +1,23 @@
+# Cerbral public repo .gitignore
+
+# Local test artifacts
+.cerbral-test/
+/cerbral-dev/
+mirror.log
+prune.log
+*.log
+
+# OS / editor junk
+.DS_Store
+**/.DS_Store
+._*
+**/._*
+Thumbs.db
+*.swp
+*.swo
+
+# Secrets (shouldn't exist in this repo, but defense in depth)
+.env
+.env.*
+*.secrets
+.cerbral-secrets*

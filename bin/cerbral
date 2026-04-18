@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# cerbral — CLI wrapper.
+# Dispatches to individual scripts under $CERBRAL_HOME/scripts/.
+#
+# Commands:
+#   cerbral sync       — run the mirror (same as cerbral push)
+#   cerbral push       — alias for sync
+#   cerbral restore    — restore ~/.hermes/ from the brain repo (dry run by default)
+#   cerbral prune      — prune ephemeral local state when disk is full
+#   cerbral status     — show brain repo + disk status
+#   cerbral logs       — tail mirror.log
+#   cerbral upgrade    — pull latest scripts from the public cerbral repo
+#   cerbral help       — this message
+
+set -euo pipefail
+
+CERBRAL_HOME="${CERBRAL_HOME:-$HOME/cerbral}"
+CERBRAL_RAW="https://raw.githubusercontent.com/rumizenzz/cerbral/main"
+
+cmd="${1:-help}"
+shift || true
+
+case "$cmd" in
+  sync|push)
+    exec "$CERBRAL_HOME/scripts/cerbral-mirror.sh" "$@"
+    ;;
+  restore)
+    exec "$CERBRAL_HOME/scripts/cerbral-restore.sh" "$@"
+    ;;
+  prune)
+    exec "$CERBRAL_HOME/scripts/cerbral-prune.sh" "$@"
+    ;;
+  status)
+    echo "=== Cerbral status ==="
+    echo "CERBRAL_HOME:   $CERBRAL_HOME"
+    cd "$CERBRAL_HOME" 2>/dev/null || { echo "  (not set up)"; exit 0; }
+    echo "Brain repo:     $(git config --get remote.origin.url 2>/dev/null || echo '(no remote)')"
+    echo "Branch:         $(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '(no branch)')"
+    echo "Last commit:    $(git log -1 --format='%h %s (%ar)' 2>/dev/null || echo '(no commits)')"
+    echo ""
+    echo "Disk free:      $(df -h "$HOME" | awk 'NR==2 {print $4}')"
+    echo "Hermes size:    $(du -sh "$HOME/.hermes" 2>/dev/null | awk '{print $1}') total"
+    echo "  sessions:     $(du -sh "$HOME/.hermes/sessions" 2>/dev/null | awk '{print $1}')"
+    echo "  sandboxes:    $(du -sh "$HOME/.hermes/sandboxes" 2>/dev/null | awk '{print $1}')"
+    echo "  caches:       $(du -sh "$HOME/.hermes/audio_cache" "$HOME/.hermes/image_cache" 2>/dev/null | awk '{s+=$1} END {print s}' )"
+    ;;
+  logs)
+    tail -n "${1:-50}" "$CERBRAL_HOME/scripts/mirror.log" "$CERBRAL_HOME/scripts/prune.log" 2>/dev/null
+    ;;
+  upgrade)
+    echo "Pulling latest scripts from $CERBRAL_RAW ..."
+    for f in cerbral-mirror.sh cerbral-restore.sh cerbral-prune.sh; do
+      curl -fsSL "$CERBRAL_RAW/scripts/$f" -o "$CERBRAL_HOME/scripts/$f"
+      chmod +x "$CERBRAL_HOME/scripts/$f"
+      echo "  updated: $f"
+    done
+    curl -fsSL "$CERBRAL_RAW/bin/cerbral" -o "$CERBRAL_HOME/bin/cerbral"
+    chmod +x "$CERBRAL_HOME/bin/cerbral"
+    echo "  updated: cerbral (CLI)"
+    echo "Done."
+    ;;
+  help|-h|--help|"")
+    sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'
+    ;;
+  *)
+    echo "unknown command: $cmd"
+    echo "run 'cerbral help' for usage"
+    exit 1
+    ;;
+esac
