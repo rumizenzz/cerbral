@@ -45,8 +45,10 @@ rsync $RSYNC_OPTS "$CERBRAL_HOME/brain/" "$HERMES_HOME/"
 
 if [ "$APPLY" -eq 1 ] && [ -f "$CERBRAL_HOME/brain/config.yaml" ]; then
   if [ -f "$SECRETS_FILE" ]; then
+    set -a
     # shellcheck source=/dev/null
-    set -a; source "$SECRETS_FILE"; set +a
+    source "$SECRETS_FILE"
+    set +a
     envsubst < "$CERBRAL_HOME/brain/config.yaml" > "$HERMES_HOME/config.yaml"
     echo "Rendered config.yaml with secrets from $SECRETS_FILE"
   else
