@@ -7,6 +7,7 @@
 #   cerbral push       — alias for sync
 #   cerbral restore    — restore ~/.hermes/ from the brain repo (dry run by default)
 #   cerbral prune      — prune ephemeral local state when disk is full
+#   cerbral index      — regenerate INDEX.md (always-current summary of your brain)
 #   cerbral status     — show brain repo + disk status
 #   cerbral logs       — tail mirror.log
 #   cerbral upgrade    — pull latest scripts from the public cerbral repo
@@ -29,6 +30,9 @@ case "$cmd" in
     ;;
   prune)
     exec "$CERBRAL_HOME/scripts/cerbral-prune.sh" "$@"
+    ;;
+  index)
+    exec "$CERBRAL_HOME/scripts/cerbral-index.sh" "$@"
     ;;
   status)
     echo "=== Cerbral status ==="

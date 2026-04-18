@@ -75,6 +75,14 @@ PY
 fi
 
 cd "$CERBRAL_HOME"
+
+# Regenerate the always-current INDEX.md summary before committing, so the
+# index always reflects the post-sync state of the brain.
+if [ -x "$CERBRAL_HOME/scripts/cerbral-index.sh" ]; then
+  "$CERBRAL_HOME/scripts/cerbral-index.sh" >> "$LOG_FILE" 2>&1 || \
+    log "WARN: cerbral-index.sh failed (non-fatal)"
+fi
+
 git add -A
 
 if git diff --cached --quiet; then
