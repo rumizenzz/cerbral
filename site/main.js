@@ -1,4 +1,4 @@
-// Cerbral AI landing page — install-code typing animation + click-to-copy.
+// Cerbral landing page — install-code typing animation + click-to-copy.
 (function () {
   'use strict';
 
