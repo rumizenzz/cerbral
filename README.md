@@ -1,38 +1,52 @@
 # Cerbral AI
 
-**Your own personal AI. Yours. Forever. Never locked into a data center.**
+**Install and go. Now you have your own personal AI — specifically for you.**
 
-Cerbral AI is a local, open-source personal AI that grows its own knowledge
-about you — in your own private GitHub repo, on your own machine, under
-your own control. It learns who you are, what you work on, and how you
-like things done. It never forgets you between sessions. It never lives
-on someone else's servers. It never gets rug-pulled by a company changing
-the terms.
+A self-improving, always-growing, open-source AI that learns with you, on
+*your* machine, using *your* data, all of which you fully own forever.
+Already matured and ready to help you from the moment you install it — now
+it becomes uniquely yours as you use it. Like a mind you can carry between
+machines, never forgetting what it knows about your world.
 
-This is what AI was always meant to be: *your* AI, specifically for *you*.
+**No more subscriptions. No more paywalls. No more rate limits. No more
+being held hostage by the AI arms race.** Your personal AI runs on your
+machine, your data lives in your own GitHub repo, and nobody — not OpenAI,
+not Anthropic, not Google — owns any of it but you.
 
-- **Runs locally by default.** Any open-weight model, any device with the
-  hardware for it. No cloud required, no API keys required, no data leaves
-  your machine. API keys supported as a first-class option if you want
-  frontier capability or weak hardware — the brain stays yours either way.
-- **Grows in your own private GitHub repo.** Every session, your AI commits
-  what it learned about you and your world to a private repo on *your*
-  GitHub. Versioned, portable, yours forever.
-- **Gets smarter about you over time.** Skills refine through use. Memory
-  persists across sessions. Knowledge accumulates. The longer you use it,
-  the more it knows your world.
-- **Never locked into data centers, ever.** No OpenAI rug-pulls. No
-  Anthropic subscription changes. No cloud outage breaks your AI. If the
-  Cerbral project shuts down tomorrow, your AI still works — it's just
-  files on your machine and a repo you own.
-- **Never fills your disk.** `cerbral prune` keeps your local storage
-  lean by deleting ephemeral runtime bloat (session transcripts, sandboxes,
-  caches) once the important stuff is safely mirrored to your brain repo.
-- **Always summarized.** An always-current `INDEX.md` lives on your machine
-  — Cerbral AI can see what's in its full brain even when individual files
-  have been pruned locally, and fetches them from GitHub on demand.
+Built on top of [Hermes Agent](https://github.com/NousResearch/hermes-agent)
+(the best open-source self-improving agent loop), powered by Git and
+GitHub for the persistence layer, running whatever local model you choose
+(or an API key if you want — your choice, the brain stays yours either way).
 
-Open-source · MIT licensed · Built on [Hermes Agent](https://github.com/NousResearch/hermes-agent) + [Ollama](https://ollama.com)
+This is what AI was always meant to be: *your* AI, for *you*.
+
+---
+
+## What you get the second you run the installer
+
+- **An AI that's already good.** Not a blank agent. Hermes Agent ships
+  mature — skills, memory, tool use, MCP support — and Cerbral AI installs
+  it fully wired up. You talk to it for the first time and it works.
+- **An AI that grows with you.** Every session, it commits what it learned
+  to your private GitHub repo. Skills refine. Memory accumulates. A model
+  of who you are builds up over weeks and months. Like a child growing into
+  an adult — except it starts as the adult, and becomes *your* adult.
+- **Data ownership, not rental.** Your entire AI brain is files in a Git
+  repo *on your GitHub*. Not their database. Not their servers. Not their
+  terms of service. Yours. Clone it, fork it, hand it off in twenty years
+  and it still works.
+- **Free of the AI arms race.** OpenAI retires a model? Cerbral AI doesn't
+  care. Anthropic changes its pricing? Cerbral AI doesn't care. The whole
+  stack shuts down tomorrow? Cerbral AI still runs — it's just open weights
+  on your machine and Git on your GitHub.
+- **Never fills your disk.** `cerbral prune` deletes the ephemeral junk
+  agents produce (session transcripts, sandboxes, caches) once the
+  important stuff is safely mirrored to your brain repo.
+- **Always sees its whole brain.** An always-current `INDEX.md` summarizes
+  everything in your full Cerbral AI. Even if local content gets pruned,
+  your AI knows what's in the repo and fetches it on demand.
+
+Open-source · MIT licensed · Local-first · API-optional · Your data, forever.
 
 ---
 
@@ -42,27 +56,48 @@ Open-source · MIT licensed · Built on [Hermes Agent](https://github.com/NousRe
 curl -fsSL https://raw.githubusercontent.com/rumizenzz/cerbral/main/install.sh | bash
 ```
 
-The installer will:
+That's it. The installer will:
 
 1. Check for (or install) Ollama and Hermes Agent.
 2. Ask for your GitHub account.
-3. Create a **private** `cerbral-brain` repo on your GitHub — this is your
-   personal Cerbral AI's brain.
+3. Create a **private** `cerbral-brain` repo on *your* GitHub — this is
+   your personal Cerbral AI's brain. Not ours. Yours. Forever.
 4. Offer you a starter knowledge repo to seed it with.
-5. Wire up the sync hooks so every session you have commits its learnings
-   back to your private brain.
-6. Pick a recommended model for your hardware.
+5. Wire up the sync hooks so every session commits its learnings back to
+   your private brain.
+6. Pick a recommended local model for your hardware.
 
-From that point on, your personal AI — Cerbral AI — lives on your machine,
-learns from your work, and the whole brain lives in a Git repo you own.
+From that point on, your personal AI — your Cerbral AI — lives on your
+machine, learns from your work, and the whole brain lives in a Git repo
+you own. Walk away from the project, fork it, self-host it — none of
+that affects your AI. It's just files.
 
-If you'd rather read the script before running it (you should):
+If you'd rather read the script before piping it to bash (you should):
 
 ```bash
 git clone https://github.com/rumizenzz/cerbral
 cat cerbral/install.sh
 ./cerbral/install.sh
 ```
+
+## Why now
+
+The AI industry is racing to lock you in. Subscriptions stack up —
+ChatGPT Plus, Claude Pro, Cursor, Copilot, Gemini Advanced — each a
+recurring bill for the right to talk to a stranger who forgets you every
+time. Every conversation you have is training data they own and you don't.
+When a company pivots, raises prices, retires a model, or gets acquired,
+you have no recourse. Your "AI" was never yours.
+
+Open-source AI is how that gets inverted. Open weights have made the
+models freely runnable. Hermes Agent has made the agent loop freely
+usable. What was missing was the persistence layer — the part that makes
+an AI actually *yours* over time. Cerbral AI is that layer: a thin,
+principled, install-and-go piece of infrastructure that turns the existing
+open-source pieces into a personal AI you own.
+
+Open-source AI is the future. Cerbral AI is what it looks like when you
+own the whole stack.
 
 ## CLI
 
