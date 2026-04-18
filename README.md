@@ -99,6 +99,28 @@ open-source pieces into a personal AI you own.
 Open-source AI is the future. Cerbral AI is what it looks like when you
 own the whole stack.
 
+## Two modes: Chat and Cerbral Agent. Plus Projects.
+
+Cerbral AI runs in two modes — pick from a toggle at the top of the
+desktop window (or pass a flag to the CLI):
+
+- **Chat** — conversational. No filesystem writes, no code execution,
+  no agent tools. Just talk with your personal AI. Equivalent to
+  Claude's chat UI, but yours and private. Your memory, skills, and
+  knowledge still personalize every answer.
+- **Cerbral Agent** — full agent mode. File read/write, terminal,
+  code execution, web, MCP tools, deploy skills. This is where Cerbral
+  AI acts like Claude Code — it reads your repo, edits files, runs
+  commands, ships things. Scoped to a **Project**.
+
+**Projects** are folders on your machine you designate (a code repo, a
+research directory, a book draft, anything). Cerbral Agent operates
+*inside* a selected Project — its working directory and file
+permissions are bounded there. Each Project gets its own context file
+at `~/cerbral/knowledge/projects/<slug>.md` (see the `TEMPLATE.md` in
+[starter-general](https://github.com/rumizenzz/cerbral-starters-general/blob/main/projects/TEMPLATE.md)).
+Switch Projects, and the agent swaps context with you.
+
 ## CLI
 
 After install, the `cerbral` CLI wraps everything:
