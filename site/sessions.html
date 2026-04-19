@@ -48,15 +48,22 @@
     .brain-disconnect-link { background: none; border: 0; color: var(--fg-subtle, #999); font: inherit; font-size: 0.78rem; cursor: pointer; text-decoration: underline; padding: 0; }
     .brain-disconnect-link:hover { color: #b8294f; }
 
-    /* Warning modal — same shape Claude uses for destructive actions:
-       backdrop + centered card, bold heading, explanatory body, two
-       buttons with the destructive one on the right styled red. */
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(10,6,7,0.55); display: grid; place-items: center; z-index: 1000; animation: fadein 0.15s ease-out; }
+    /* Warning modal — matches Claude's destructive-action pattern per
+       the research pass:
+         - 16px border-radius (claude.ai inspection)
+         - Backdrop rgba(0,0,0,0.45)
+         - Restrained ease-out fade+scale (150ms) — NO spring bounce
+         - Danger color in the Tailwind red-700 band (#BE3F3F),
+           distinct from the brand orange #C15F3C which is reserved
+           for affirmative CTAs
+         - Cancel left (ghost), Destructive right (solid red)
+         - Labels: specific verbs, never "OK" / "Yes" / "Remove" */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: grid; place-items: center; z-index: 1000; animation: fadein 0.15s ease-out; }
     @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
-    .modal-card { background: var(--bg, #fff); border: 1px solid var(--rule-strong, #d9d2c8); border-radius: 18px; padding: 1.6rem 1.6rem 1.3rem; max-width: 460px; width: calc(100% - 2rem); box-shadow: 0 24px 60px -18px rgba(0,0,0,0.35); animation: modalpop 0.18s cubic-bezier(0.2, 0.9, 0.25, 1.15); }
-    @keyframes modalpop { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+    .modal-card { background: var(--bg, #fff); border: 1px solid var(--rule-strong, #d9d2c8); border-radius: 16px; padding: 1.6rem 1.6rem 1.3rem; max-width: 460px; width: calc(100% - 2rem); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); animation: modalpop 0.15s ease-out; }
+    @keyframes modalpop { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: none; } }
     .modal-head { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.4rem; }
-    .modal-head .warn-icon { width: 32px; height: 32px; border-radius: 50%; background: rgba(184,41,79,0.12); color: #b8294f; display: grid; place-items: center; font-size: 1rem; flex-shrink: 0; }
+    .modal-head .warn-icon { width: 32px; height: 32px; border-radius: 50%; background: rgba(190,63,63,0.12); color: #BE3F3F; display: grid; place-items: center; font-size: 1rem; flex-shrink: 0; }
     .modal-card h2 { margin: 0; font-size: 1.15rem; letter-spacing: -0.01em; }
     .modal-body { color: var(--fg-muted, #555); font-size: 0.92rem; line-height: 1.55; margin: 0.8rem 0 0.5rem; }
     .modal-body strong { color: var(--fg, #111); }
@@ -66,8 +73,8 @@
     .modal-btn { padding: 0.6rem 1.05rem; border-radius: 9px; font: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: background 0.12s, border-color 0.12s; }
     .modal-btn-cancel { background: transparent; color: var(--fg, #111); border-color: var(--rule-strong, #d9d2c8); }
     .modal-btn-cancel:hover { background: var(--bg-card, #f7f2ed); }
-    .modal-btn-danger { background: #b8294f; color: #fff; }
-    .modal-btn-danger:hover { background: #9d1f42; }
+    .modal-btn-danger { background: #BE3F3F; color: #fff; }
+    .modal-btn-danger:hover { background: #A33434; }
     .web-foot { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--rule, #e5dfd7); font-size: 0.78rem; color: var(--fg-subtle, #999); line-height: 1.6; }
     .web-foot code { background: var(--bg-card, #f7f2ed); padding: 0 0.3rem; border-radius: 4px; }
   </style>
@@ -148,18 +155,19 @@
         <h2 id="dc-modal-title">Disconnect your Cerbral brain?</h2>
       </div>
       <p class="modal-body">
-        This signs out your GitHub connection from Cerbral Web.
+        This signs out your Cerbral — from <strong>both Cerbral Web and
+        Cerbral Desktop</strong>. They share one connection, so disconnecting
+        here disconnects everywhere.
         <strong>Nothing in your <code>cerbral-brain</code> repo is deleted</strong>
         — your brain is yours, forever — but until you reconnect:
       </p>
       <ul class="modal-bullets">
-        <li>Cerbral Web can't show any of your sessions, memory, or instructions</li>
-        <li>You won't be able to open or continue any conversation here</li>
-        <li>Your desktop app keeps working — it has its own local connection</li>
+        <li>Cerbral Web can't show any sessions, memory, or instructions</li>
+        <li>Cerbral Desktop stops syncing new conversations to your GitHub</li>
+        <li>Your local data at <code>~/.cerbral/</code> on your Mac stays put — the desktop can still read it locally, but it'll no longer push to your brain-repo</li>
       </ul>
       <p class="modal-body">
-        You can reconnect any time by clicking "Reconnect Cerbral brain" on
-        the sign-in page. Ready to disconnect?
+        Reconnect any time by signing back in. Ready to disconnect?
       </p>
       <div class="modal-actions">
         <button class="modal-btn modal-btn-cancel" id="dc-cancel-btn" type="button">Cancel</button>
