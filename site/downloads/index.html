@@ -45,28 +45,31 @@
       <a class="dl-back" href="/welcome">← Back</a>
       <h1>Cerbral for Mac — almost there.</h1>
       <p class="lede">
-        The Cerbral installer is in closed beta while we finish signing and
-        notarizing. The one-click bundle sets up your Mac in ~3 minutes:
+        Cerbral installs as a normal Mac app: double-click the .dmg,
+        drag <strong>Cerbral.app</strong> into Applications, double-click
+        Cerbral to launch. The bundle lays out your Mac the same way the
+        desktop flow does:
       </p>
 
       <ul class="dl-stack">
-        <li><strong>Cerbral.app</strong> — the desktop client (Tauri, ~40 MB).</li>
-        <li><strong>Ollama</strong> — the local AI runtime. We auto-pick the build for your chip (Apple Silicon or Intel).</li>
-        <li><strong>Your AI model</strong> — tuned to your hardware. Default is Qwen3:8B (~5 GB); we'll recommend a bigger model if your Mac can handle it.</li>
-        <li><strong>Local tunnel</strong> — a secure connection so Cerbral Web can reach the AI on your Mac. Nothing leaves your device without it.</li>
+        <li><strong>Cerbral.app</strong> — the desktop client.</li>
+        <li><strong>cloudflared tunnel</strong> — bundled as a sidecar, so Cerbral Web on cerbral.com can reach the AI running on your Mac.</li>
+        <li><strong>Ollama</strong> — install separately from <a href="https://ollama.com/download" target="_blank" rel="noopener">ollama.com</a>. Cerbral prompts you on first run if it's missing.</li>
+        <li><strong>Your AI model</strong> — pulled by Cerbral on first run. Default is Qwen3:8B (~5 GB); we'll recommend a bigger model if your Mac can handle it.</li>
       </ul>
 
       <p class="lede">
-        Sit tight — your brain repo is safe on GitHub, and your session is
-        waiting on <a href="/welcome">/welcome</a>. When the installer ships
-        we'll drop it at <code>/downloads/Cerbral.dmg</code> and this button
-        will just work.
+        Coming soon: the .dmg will live at
+        <code>github.com/rumizenzz/cerbral-desktop/releases/latest/download/Cerbral.dmg</code>
+        and <code>/downloads/Cerbral.dmg</code> on cerbral.com will redirect
+        there automatically. Until it's uploaded, you're on this page.
       </p>
 
       <p class="dl-small">
-        Want an early invite? Email
-        <a href="mailto:hello@cerbral.com">hello@cerbral.com</a> and we'll
-        send you a signed build.
+        Building it yourself? Clone
+        <a href="https://github.com/rumizenzz/cerbral-desktop" target="_blank" rel="noopener">rumizenzz/cerbral-desktop</a>
+        and run <code>make dmg</code>. You'll get the same .dmg in
+        <code>src-tauri/target/release/bundle/dmg/</code>.
       </p>
     </div>
   </main>
