@@ -44,25 +44,51 @@
       <div id="status" class="welcome-status">Setting up your brain repo…</div>
 
       <div id="success" hidden>
-        <h1>You're all set.</h1>
-        <p class="lede">
+        <h1 id="success-h1">You're almost there — one last step.</h1>
+        <p class="lede" id="success-lede">
           Your private <code id="repo-url">cerbral-brain</code> repo is ready.
-          Everything your AI learns about you will live here — you own it,
-          forever.
+          Now install Cerbral on your Mac — the whole AI runs on your device.
         </p>
-        <div class="open-desktop">
+
+        <!-- FIRST-TIME path: big Install CTA. This is the required path for new
+             users. One click installs Cerbral.app + Ollama + their AI model +
+             a local tunnel (which is what lets Cerbral Web reach the AI
+             running on their Mac). -->
+        <div id="install-path" class="open-desktop" hidden>
+          <a id="install-btn" class="auth-btn auth-btn-primary auth-btn-lg"
+             href="/downloads/Cerbral.dmg" download>
+            Install Cerbral for Mac
+          </a>
+          <p class="auth-small">
+            One click installs <strong>Cerbral.app</strong>, <strong>Ollama</strong>,
+            your recommended <strong>AI model</strong>, and a secure
+            <strong>local tunnel</strong> — so both the desktop app and
+            Cerbral Web can reach the AI running on your Mac.
+            Takes ~3 minutes (your AI model is a ~5GB download).
+          </p>
+          <p class="auth-small" style="margin-top: 0.8rem;">
+            Already installed?
+            <a id="already-installed-link" href="#">Open Cerbral →</a>
+          </p>
+        </div>
+
+        <!-- RETURNING path: user has installed before (localStorage marker
+             from a prior /welcome visit). Skip the install CTA and let them
+             go straight to the desktop handoff. -->
+        <div id="open-path" class="open-desktop" hidden>
           <a id="open-desktop-btn" class="auth-btn auth-btn-primary auth-btn-lg" href="#">
             Open Cerbral desktop app
           </a>
           <p class="auth-small">
-            Don't have the app yet?
-            <a href="/#install">Download Cerbral</a>
+            Need to reinstall?
+            <a id="reinstall-link" href="#">Download Cerbral again</a>
             — your session will pick up where this left off.
           </p>
           <p class="auth-small" style="margin-top: 0.8rem;">
             Or browse your sessions right here on the web →
             <a href="/sessions">Open Cerbral Web</a>.
-            Cerbral Web reads straight from your own GitHub brain-repo;
+            Cerbral Web reads straight from your own GitHub brain-repo
+            and talks to the AI on your Mac via your local tunnel;
             Cerbral Cloud never stores or sees your conversations.
           </p>
         </div>
@@ -73,7 +99,7 @@
             <li><strong>Email verified</strong> via Supabase magic link — no password needed.</li>
             <li><strong>GitHub connected</strong> with the minimum scope to create your private brain repo.</li>
             <li><strong>Brain repo created</strong> at <code id="repo-url-2"></code>. Cerbral Cloud will never read it.</li>
-            <li><strong>Desktop handoff</strong> — clicking the button above opens Cerbral.app and saves your session to the OS Keychain.</li>
+            <li id="fact-handoff"><strong>Install Cerbral</strong> — one installer bundles the app, Ollama, your AI model, and a local tunnel. Everything lives on your Mac.</li>
           </ul>
         </div>
       </div>
@@ -219,6 +245,62 @@
         githubHandle: user.login,
       });
       document.getElementById('open-desktop-btn').href = handoff;
+
+      // The Mac installer bundle lives at /downloads/Cerbral.dmg once Netlify
+      // ships it. Pointing everything at the same path means we can drop a
+      // new build in site/downloads/ and it's live — no code change needed.
+      const DESKTOP_DMG_URL = '/downloads/Cerbral.dmg';
+      document.getElementById('install-btn').href   = DESKTOP_DMG_URL;
+      document.getElementById('reinstall-link').href = DESKTOP_DMG_URL;
+
+      // Branch: install path (default, first-time) vs. open path (returning).
+      // We can't actually probe for Cerbral.app from the browser, so we use
+      // a localStorage marker that gets set when the user either clicks
+      // "Install Cerbral" (optimistic) or tells us "Already installed?".
+      // If they bail without installing, the Open button just silently
+      // fails — the Reinstall link gets them back to the installer.
+      const cerbralInstalled = localStorage.getItem('cerbral_installed') === '1';
+      const installPathEl = document.getElementById('install-path');
+      const openPathEl    = document.getElementById('open-path');
+      const successH1El   = document.getElementById('success-h1');
+      const successLedeEl = document.getElementById('success-lede');
+      const factHandoffEl = document.getElementById('fact-handoff');
+
+      if (cerbralInstalled) {
+        installPathEl.hidden = true;
+        openPathEl.hidden    = false;
+        successH1El.textContent = "You're all set.";
+        // Rebuild the lede without wiping the #repo-url node the earlier
+        // code wrote into (we just replace the trailing sentence).
+        successLedeEl.innerHTML =
+          'Your private <code id="repo-url">' + repo.full_name + '</code> ' +
+          'repo is ready. Open Cerbral to pick up where this left off.';
+        factHandoffEl.innerHTML =
+          '<strong>Desktop handoff</strong> — clicking Open Cerbral above ' +
+          'launches the app and saves your session to the OS Keychain.';
+      } else {
+        installPathEl.hidden = false;
+        openPathEl.hidden    = true;
+        // Leave the install-oriented copy already in the DOM as-is.
+      }
+
+      // "Already installed?" — user confirms they have Cerbral.app locally.
+      // Flip the marker and reload so the Open path renders cleanly.
+      document.getElementById('already-installed-link')
+        .addEventListener('click', (e) => {
+          e.preventDefault();
+          localStorage.setItem('cerbral_installed', '1');
+          window.location.reload();
+        });
+
+      // Clicking Install optimistically marks installed. Next /welcome visit
+      // skips to the Open handoff; if they bail mid-install, Reinstall gets
+      // them back. We DON'T set it on download start (browser triggers the
+      // download synchronously) — a pointerdown listener races the nav.
+      document.getElementById('install-btn')
+        .addEventListener('click', () => {
+          localStorage.setItem('cerbral_installed', '1');
+        });
 
       statusEl.hidden = true;
       successEl.hidden = false;

@@ -214,3 +214,34 @@ force = false
 [redirects.conditions]
 
 [redirects.headers]
+
+# Clean URL for the downloads landing page — /downloads serves the
+# index.html inside site/downloads/. Saves a trailing slash redirect.
+[[redirects]]
+from = "/downloads"
+to = "/downloads/index.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+# Fallback while the Mac installer bundle is still being built/notarized.
+# Netlify serves /downloads/Cerbral.dmg from disk if it exists; otherwise
+# this rule (force = false) catches the 404 and redirects to the
+# coming-soon page. Drop the real .dmg into site/downloads/ and this rule
+# automatically becomes a no-op — no code change needed.
+[[redirects]]
+from = "/downloads/Cerbral.dmg"
+to = "/downloads/"
+status = 302.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
