@@ -27,6 +27,47 @@
     .web-row-when { font-size: 0.78rem; color: var(--fg-subtle, #999); font-variant-numeric: tabular-nums; white-space: nowrap; }
     .web-empty { padding: 3rem 1rem; text-align: center; color: var(--fg-muted, #666); }
     .web-err { padding: 1rem; background: rgba(255, 59, 92, 0.08); border: 1px solid rgba(255, 59, 92, 0.28); border-radius: 10px; color: #b8294f; font-size: 0.9rem; }
+    /* Disconnected-brain card — the single most important empty state.
+       Without a GitHub connection, Cerbral Web literally can't load
+       anything (by design: the user owns all data). Make the path to
+       reconnecting obvious, not a footnote. */
+    .brain-disconnect { padding: 2rem 1.75rem; background: linear-gradient(180deg, rgba(255,107,53,0.06), rgba(255,107,53,0.02) 60%, transparent); border: 1px solid rgba(255,107,53,0.25); border-radius: 16px; text-align: center; max-width: 560px; margin: 2rem auto; }
+    .brain-disconnect h2 { margin: 0.4rem 0 0.5rem; font-size: 1.25rem; letter-spacing: -0.01em; }
+    .brain-disconnect p { color: var(--fg-muted, #555); line-height: 1.55; margin: 0.6rem 0; font-size: 0.95rem; }
+    .brain-disconnect .dc-icon { font-size: 1.6rem; line-height: 1; }
+    .brain-disconnect .dc-btn { display: inline-block; margin-top: 1rem; padding: 0.75rem 1.4rem; background: #0a0607; color: #fff; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+    .brain-disconnect .dc-btn:hover { background: #1a0f10; }
+    .brain-disconnect .dc-small { font-size: 0.8rem; color: var(--fg-subtle, #999); margin-top: 1.1rem; }
+
+    /* Disconnect button in the header toolbar — low-key by default,
+       click opens a blocking warning modal. This mirrors Claude's
+       destructive-action pattern: action is available but takes two
+       deliberate steps. */
+    .brain-link-row { display: flex; align-items: center; gap: 0.6rem; font-size: 0.78rem; color: var(--fg-subtle, #999); margin-top: 0.6rem; }
+    .brain-link-row code { background: var(--bg-card, #f7f2ed); padding: 0 0.3rem; border-radius: 4px; }
+    .brain-disconnect-link { background: none; border: 0; color: var(--fg-subtle, #999); font: inherit; font-size: 0.78rem; cursor: pointer; text-decoration: underline; padding: 0; }
+    .brain-disconnect-link:hover { color: #b8294f; }
+
+    /* Warning modal — same shape Claude uses for destructive actions:
+       backdrop + centered card, bold heading, explanatory body, two
+       buttons with the destructive one on the right styled red. */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(10,6,7,0.55); display: grid; place-items: center; z-index: 1000; animation: fadein 0.15s ease-out; }
+    @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+    .modal-card { background: var(--bg, #fff); border: 1px solid var(--rule-strong, #d9d2c8); border-radius: 18px; padding: 1.6rem 1.6rem 1.3rem; max-width: 460px; width: calc(100% - 2rem); box-shadow: 0 24px 60px -18px rgba(0,0,0,0.35); animation: modalpop 0.18s cubic-bezier(0.2, 0.9, 0.25, 1.15); }
+    @keyframes modalpop { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+    .modal-head { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.4rem; }
+    .modal-head .warn-icon { width: 32px; height: 32px; border-radius: 50%; background: rgba(184,41,79,0.12); color: #b8294f; display: grid; place-items: center; font-size: 1rem; flex-shrink: 0; }
+    .modal-card h2 { margin: 0; font-size: 1.15rem; letter-spacing: -0.01em; }
+    .modal-body { color: var(--fg-muted, #555); font-size: 0.92rem; line-height: 1.55; margin: 0.8rem 0 0.5rem; }
+    .modal-body strong { color: var(--fg, #111); }
+    .modal-bullets { margin: 0.6rem 0 0.4rem; padding-left: 1.2rem; font-size: 0.89rem; color: var(--fg-muted, #555); }
+    .modal-bullets li { margin: 0.25rem 0; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.1rem; }
+    .modal-btn { padding: 0.6rem 1.05rem; border-radius: 9px; font: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: background 0.12s, border-color 0.12s; }
+    .modal-btn-cancel { background: transparent; color: var(--fg, #111); border-color: var(--rule-strong, #d9d2c8); }
+    .modal-btn-cancel:hover { background: var(--bg-card, #f7f2ed); }
+    .modal-btn-danger { background: #b8294f; color: #fff; }
+    .modal-btn-danger:hover { background: #9d1f42; }
     .web-foot { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--rule, #e5dfd7); font-size: 0.78rem; color: var(--fg-subtle, #999); line-height: 1.6; }
     .web-foot code { background: var(--bg-card, #f7f2ed); padding: 0 0.3rem; border-radius: 4px; }
   </style>
@@ -64,6 +105,23 @@
     </div>
 
     <div id="web-err" class="web-err" hidden></div>
+    <div id="brain-disconnect" class="brain-disconnect" hidden>
+      <div class="dc-icon">⚠️</div>
+      <h2>Your Cerbral brain is disconnected</h2>
+      <p id="dc-reason">
+        It looks like you disconnected your GitHub — that's where your
+        whole Cerbral lives (every session, every memory, everything
+        it's learned about you). Cerbral Web can't show you anything
+        without it connected.
+      </p>
+      <p>Reconnect now to bring back your full Cerbral.</p>
+      <a id="dc-btn" class="dc-btn" href="/onboard">Reconnect Cerbral brain</a>
+      <p class="dc-small">
+        This re-runs the GitHub sign-in to restore read access to your
+        <code>cerbral-brain</code> repo. Your conversations never leave
+        your own GitHub — Cerbral Cloud doesn't store them.
+      </p>
+    </div>
     <div id="web-status" class="web-empty">Loading your sessions…</div>
     <div id="web-list" class="web-list"></div>
 
@@ -73,16 +131,53 @@
       your browser — it's the only thing reading these files. Revoke the
       token anytime at <a href="https://github.com/settings/applications" target="_blank" rel="noopener">github.com/settings/applications</a>.
     </p>
+    <div class="brain-link-row">
+      <button class="brain-disconnect-link" id="disconnect-brain-btn" type="button">
+        Disconnect Cerbral brain
+      </button>
+    </div>
   </main>
+
+  <!-- Destructive-action modal: confirm before disconnecting the brain.
+       Same two-step pattern Claude uses: action is reachable but
+       requires deliberate confirmation with clear consequences. -->
+  <div class="modal-backdrop" id="disconnect-modal" hidden>
+    <div class="modal-card" role="dialog" aria-labelledby="dc-modal-title" aria-modal="true">
+      <div class="modal-head">
+        <div class="warn-icon" aria-hidden="true">⚠️</div>
+        <h2 id="dc-modal-title">Disconnect your Cerbral brain?</h2>
+      </div>
+      <p class="modal-body">
+        This signs out your GitHub connection from Cerbral Web.
+        <strong>Nothing in your <code>cerbral-brain</code> repo is deleted</strong>
+        — your brain is yours, forever — but until you reconnect:
+      </p>
+      <ul class="modal-bullets">
+        <li>Cerbral Web can't show any of your sessions, memory, or instructions</li>
+        <li>You won't be able to open or continue any conversation here</li>
+        <li>Your desktop app keeps working — it has its own local connection</li>
+      </ul>
+      <p class="modal-body">
+        You can reconnect any time by clicking "Reconnect Cerbral brain" on
+        the sign-in page. Ready to disconnect?
+      </p>
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-cancel" id="dc-cancel-btn" type="button">Cancel</button>
+        <button class="modal-btn modal-btn-danger" id="dc-confirm-btn" type="button">Disconnect brain</button>
+      </div>
+    </div>
+  </div>
 
   <script src="/config.js" onerror="console.info('site/config.js not present yet.')"></script>
   <script type="module">
-    import { getSession, listBrainDir } from '/auth.js';
+    import { getSession, listBrainDir, signOut, supabase } from '/auth.js';
 
     const errEl = document.getElementById('web-err');
     const statusEl = document.getElementById('web-status');
     const listEl = document.getElementById('web-list');
     const repoLink = document.getElementById('repo-link');
+    const dcEl = document.getElementById('brain-disconnect');
+    const dcReasonEl = document.getElementById('dc-reason');
 
     function showErr(msg) {
       statusEl.hidden = true;
@@ -90,7 +185,14 @@
       errEl.textContent = msg;
       errEl.hidden = false;
     }
-    function clearErr() { errEl.hidden = true; errEl.textContent = ''; }
+    function showDisconnected(reason) {
+      statusEl.hidden = true;
+      errEl.hidden = true;
+      listEl.innerHTML = '';
+      if (reason) dcReasonEl.textContent = reason;
+      dcEl.hidden = false;
+    }
+    function clearErr() { errEl.hidden = true; errEl.textContent = ''; dcEl.hidden = true; }
 
     function relativeTime(ms) {
       const diff = Date.now() - ms;
@@ -153,17 +255,72 @@
       }
     }
 
+    // ---------- Disconnect-brain modal wiring ----------
+    const disconnectBtn = document.getElementById('disconnect-brain-btn');
+    const modal = document.getElementById('disconnect-modal');
+    const cancelBtn = document.getElementById('dc-cancel-btn');
+    const confirmBtn = document.getElementById('dc-confirm-btn');
+
+    function openDisconnectModal() {
+      modal.hidden = false;
+      confirmBtn.focus();
+      document.addEventListener('keydown', modalKeyHandler);
+    }
+    function closeDisconnectModal() {
+      modal.hidden = true;
+      document.removeEventListener('keydown', modalKeyHandler);
+    }
+    function modalKeyHandler(e) {
+      if (e.key === 'Escape') { e.preventDefault(); closeDisconnectModal(); }
+    }
+    disconnectBtn.addEventListener('click', openDisconnectModal);
+    cancelBtn.addEventListener('click', closeDisconnectModal);
+    // Click the backdrop (outside the card) to dismiss — matches the
+    // common "tap outside to cancel" affordance. Doesn't count as
+    // confirm so nothing destructive happens.
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeDisconnectModal();
+    });
+    confirmBtn.addEventListener('click', async () => {
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Disconnecting…';
+      try {
+        await signOut();
+      } catch { /* still proceed to the disconnected view */ }
+      // Reload /sessions — the auth check at the top of the script will
+      // see no session and render the "brain disconnected" card with
+      // the reconnect CTA.
+      window.location.replace('/sessions');
+    });
+
     (async () => {
       const session = await getSession();
       if (!session) {
-        window.location.replace('/signup?next=/sessions');
+        // Not signed in at all — either first-time visitor or just
+        // signed out. Show the disconnected-brain view inline instead
+        // of redirecting to /signup, since the message is framed as
+        // "reconnect your brain" which flows naturally either way.
+        showDisconnected(
+          'You\'re not signed in. Cerbral Web needs your GitHub connected to your Cerbral account to show you anything.'
+        );
+        document.getElementById('dc-btn').href = '/signup?next=/sessions';
+        document.getElementById('dc-btn').textContent = 'Sign in & reconnect';
         return;
       }
       if (!session.provider_token) {
-        showErr(
-          'You need to connect GitHub first so Cerbral can read your sessions from your own brain-repo. ' +
-          '(This is the whole point — Cerbral Cloud never stores your conversations.) ' +
-          'Go to /onboard and connect.'
+        // Two sub-cases worth distinguishing in the copy: (a) the user
+        // never connected GitHub, or (b) their token expired / they
+        // revoked the OAuth app. The UI + CTA is the same — go
+        // reconnect — but the reason line should match reality.
+        const everLinked = (session.user?.identities || [])
+          .some((i) => i.provider === 'github');
+        showDisconnected(
+          everLinked
+            ? 'Your GitHub token expired or was revoked — that\'s where your whole Cerbral lives. ' +
+              'Cerbral Web can\'t show any of your sessions, memory, or instructions without that connection.'
+            : 'You haven\'t connected your GitHub yet. That\'s where your whole Cerbral lives — ' +
+              'every session, every memory, everything it\'s learned about you. Cerbral Web ' +
+              'can\'t show you anything without it connected.'
         );
         return;
       }

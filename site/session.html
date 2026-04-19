@@ -24,6 +24,13 @@
     .web-msg.system { opacity: 0.55; font-size: 0.82rem; }
     .web-err { padding: 1rem; background: rgba(255, 59, 92, 0.08); border: 1px solid rgba(255, 59, 92, 0.28); border-radius: 10px; color: #b8294f; font-size: 0.9rem; }
     .web-empty { padding: 3rem 1rem; text-align: center; color: var(--fg-muted, #666); }
+    .brain-disconnect { padding: 2rem 1.75rem; background: linear-gradient(180deg, rgba(255,107,53,0.06), rgba(255,107,53,0.02) 60%, transparent); border: 1px solid rgba(255,107,53,0.25); border-radius: 16px; text-align: center; max-width: 560px; margin: 2rem auto; }
+    .brain-disconnect h2 { margin: 0.4rem 0 0.5rem; font-size: 1.25rem; letter-spacing: -0.01em; }
+    .brain-disconnect p { color: var(--fg-muted, #555); line-height: 1.55; margin: 0.6rem 0; font-size: 0.95rem; }
+    .brain-disconnect .dc-icon { font-size: 1.6rem; line-height: 1; }
+    .brain-disconnect .dc-btn { display: inline-block; margin-top: 1rem; padding: 0.75rem 1.4rem; background: #0a0607; color: #fff; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+    .brain-disconnect .dc-btn:hover { background: #1a0f10; }
+    .brain-disconnect .dc-small { font-size: 0.8rem; color: var(--fg-subtle, #999); margin-top: 1.1rem; }
     /* Strip any think/tool_use tags from rendered content via JS, but
        keep some very minimal markdown — **bold**, `code`, newlines. */
     .bubble code { background: var(--bg-card, #f7f2ed); padding: 0 0.3rem; border-radius: 4px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.9em; }
@@ -59,6 +66,21 @@
     </div>
 
     <div id="web-err" class="web-err" hidden></div>
+    <div id="brain-disconnect" class="brain-disconnect" hidden>
+      <div class="dc-icon">⚠️</div>
+      <h2>Your Cerbral brain is disconnected</h2>
+      <p id="dc-reason">
+        It looks like you disconnected your GitHub — that's where your
+        whole Cerbral lives. Cerbral Web can't open any session without it.
+      </p>
+      <p>Reconnect to bring back your full Cerbral.</p>
+      <a class="dc-btn" href="/onboard">Reconnect Cerbral brain</a>
+      <p class="dc-small">
+        Cerbral Cloud never stores your conversations — they live in your
+        own GitHub <code>cerbral-brain</code> repo, and only your token
+        reads from it.
+      </p>
+    </div>
     <div id="status" class="web-empty">Loading session from your brain-repo…</div>
     <div id="msgs" class="web-msgs"></div>
   </main>
@@ -76,12 +98,21 @@
     const msgsEl = document.getElementById('msgs');
     const titleEl = document.getElementById('title');
     const metaEl = document.getElementById('meta');
+    const dcEl = document.getElementById('brain-disconnect');
+    const dcReasonEl = document.getElementById('dc-reason');
 
     function showErr(msg) {
       statusEl.hidden = true;
       msgsEl.innerHTML = '';
       errEl.textContent = msg;
       errEl.hidden = false;
+    }
+    function showDisconnected(reason) {
+      statusEl.hidden = true;
+      errEl.hidden = true;
+      msgsEl.innerHTML = '';
+      if (reason) dcReasonEl.textContent = reason;
+      dcEl.hidden = false;
     }
 
     function escapeHtml(s) {
@@ -139,7 +170,15 @@
         return;
       }
       if (!session.provider_token) {
-        showErr('Connect GitHub first at /onboard — Cerbral Web reads straight from your own repo.');
+        const everLinked = (session.user?.identities || [])
+          .some((i) => i.provider === 'github');
+        showDisconnected(
+          everLinked
+            ? 'Your GitHub token expired or was revoked — that\'s where your Cerbral lives. ' +
+              'Cerbral Web can\'t open this session without that connection.'
+            : 'You haven\'t connected your GitHub yet. That\'s where your whole Cerbral lives — ' +
+              'Cerbral Web can\'t open this session without it connected.'
+        );
         return;
       }
       let raw;
