@@ -1,0 +1,25 @@
+Welcome to Cerbral.
+
+Hey {{FIRST_NAME}} —
+
+You've got a Cerbral account. Here's what happens next:
+
+1. Install the desktop app (or use the CLI — your call):
+
+     curl -fsSL https://cerbral.com/install.sh | bash
+
+2. Connect your GitHub. Cerbral creates a private `cerbral-brain` repo
+   on your GitHub. That repo is your AI's memory. Forever.
+
+3. Talk to your AI. Whatever you say, whatever it learns, whatever it
+   remembers — it commits to your private repo. We never see any of it.
+
+What Cerbral sees about you: your email and your GitHub username.
+Nothing else. No conversations, no memories, no files. That's the whole
+deal — your AI, not ours.
+
+Install Cerbral: https://cerbral.com
+
+Open-source · MIT licensed · Local-first · Your data, forever.
+GitHub: https://github.com/rumizenzz/cerbral
+Unsubscribe: https://cerbral.com/unsubscribe?email={{EMAIL}}
