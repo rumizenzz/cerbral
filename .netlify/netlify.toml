@@ -103,6 +103,42 @@ for = "/config.js"
 [headers.values]
 Cache-Control = "no-store"
 
+[[headers]]
+for = "/sessions.html"
+
+[headers.values]
+Cache-Control = "no-store"
+
+[[headers]]
+for = "/session.html"
+
+[headers.values]
+Cache-Control = "no-store"
+
+[[redirects]]
+from = "/sessions"
+to = "/sessions.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/session"
+to = "/session.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
 [[redirects]]
 from = "/signup"
 to = "/signup.html"

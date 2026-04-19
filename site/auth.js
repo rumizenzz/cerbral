@@ -140,6 +140,57 @@ export async function ensureBrainRepo(session, repoName = 'cerbral-brain') {
 }
 
 /**
+ * List files under a directory in the user's cerbral-brain repo via
+ * the GitHub Contents API. Used by Cerbral Web to show past sessions
+ * without Cerbral Cloud ever storing or touching them. All requests
+ * go browser → GitHub directly using the user's provider_token.
+ *
+ * Returns [{ name, path, size, sha }] or [] if dir doesn't exist.
+ */
+export async function listBrainDir(session, path, repoName = 'cerbral-brain') {
+  const token = session?.provider_token;
+  if (!token) throw new Error('GitHub token missing');
+  const user = session.user?.user_metadata?.user_name
+    || session.user?.identities?.find((i) => i.provider === 'github')?.identity_data?.user_name;
+  if (!user) throw new Error('GitHub username missing');
+  const url = `https://api.github.com/repos/${user}/${repoName}/contents/${encodeURI(path)}`;
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
+  });
+  if (res.status === 404) return [];
+  if (!res.ok) throw new Error(`GitHub ${res.status}: ${await res.text()}`);
+  const data = await res.json();
+  if (!Array.isArray(data)) return [];
+  return data
+    .filter((f) => f.type === 'file')
+    .map((f) => ({ name: f.name, path: f.path, size: f.size, sha: f.sha }));
+}
+
+/**
+ * Read a single file from the user's cerbral-brain repo. Returns the
+ * decoded text content.
+ */
+export async function readBrainFile(session, path, repoName = 'cerbral-brain') {
+  const token = session?.provider_token;
+  if (!token) throw new Error('GitHub token missing');
+  const user = session.user?.user_metadata?.user_name
+    || session.user?.identities?.find((i) => i.provider === 'github')?.identity_data?.user_name;
+  if (!user) throw new Error('GitHub username missing');
+  const url = `https://api.github.com/repos/${user}/${repoName}/contents/${encodeURI(path)}`;
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
+  });
+  if (!res.ok) throw new Error(`GitHub ${res.status}: ${await res.text()}`);
+  const data = await res.json();
+  if (data.encoding !== 'base64') throw new Error(`Unexpected encoding ${data.encoding}`);
+  // atob → UTF-8 decode via TextDecoder (handles emoji, non-ASCII).
+  const bin = atob(data.content.replace(/\s/g, ''));
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder('utf-8').decode(bytes);
+}
+
+/**
  * Read the user's Cerbral profile row. Returns null if the row doesn't
  * exist yet (first-timer) OR if the profiles table isn't wired (which
  * is a non-fatal degradation — callers can fall through to the usual

@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Session — Cerbral</title>
+  <meta name="theme-color" content="#0a0607">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ff6b35'/%3E%3Cstop offset='100%25' stop-color='%23ff3b5c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext y='.9em' font-size='90' fill='url(%23g)'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/auth.css">
+  <style>
+    .web-shell { max-width: 820px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .web-back { color: var(--fg-muted, #666); text-decoration: none; font-size: 0.88rem; margin-bottom: 1rem; display: inline-flex; align-items: center; gap: 0.35rem; }
+    .web-back:hover { color: #ff6b35; }
+    .web-head h1 { font-size: 1.55rem; letter-spacing: -0.01em; margin: 0.25rem 0 0.4rem; }
+    .web-meta { color: var(--fg-subtle, #999); font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+    .web-msgs { display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; }
+    .web-msg { display: flex; flex-direction: column; gap: 0.35rem; }
+    .web-msg .role { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-subtle, #999); }
+    .web-msg.user { align-self: flex-end; max-width: 640px; }
+    .web-msg.user .bubble { background: color-mix(in srgb, #ff6b35 12%, var(--bg-card, #f7f2ed)); border: 1px solid color-mix(in srgb, #ff6b35 28%, var(--rule, #e5dfd7)); padding: 0.85rem 1.1rem; border-radius: 14px 14px 4px 14px; white-space: pre-wrap; word-wrap: break-word; }
+    .web-msg.assistant .role { color: #ff4d88; }
+    .web-msg.assistant .bubble { padding: 0.2rem 0; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; }
+    .web-msg.system { opacity: 0.55; font-size: 0.82rem; }
+    .web-err { padding: 1rem; background: rgba(255, 59, 92, 0.08); border: 1px solid rgba(255, 59, 92, 0.28); border-radius: 10px; color: #b8294f; font-size: 0.9rem; }
+    .web-empty { padding: 3rem 1rem; text-align: center; color: var(--fg-muted, #666); }
+    /* Strip any think/tool_use tags from rendered content via JS, but
+       keep some very minimal markdown — **bold**, `code`, newlines. */
+    .bubble code { background: var(--bg-card, #f7f2ed); padding: 0 0.3rem; border-radius: 4px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.9em; }
+    .bubble strong { font-weight: 600; }
+    .bubble em { font-style: italic; }
+  </style>
+</head>
+<body class="auth-page">
+  <nav class="topbar">
+    <div class="container">
+      <a class="brand" href="/">
+        <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+          <defs>
+            <linearGradient id="brandGrad" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0%" stop-color="#ff6b35"/>
+              <stop offset="50%" stop-color="#ff4d88"/>
+              <stop offset="100%" stop-color="#ff3b5c"/>
+            </linearGradient>
+          </defs>
+          <circle cx="20" cy="20" r="14" fill="none" stroke="url(#brandGrad)" stroke-width="2.4"/>
+          <circle cx="20" cy="20" r="5.5" fill="url(#brandGrad)"/>
+        </svg>
+        <span>Cerbral</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="web-shell">
+    <a class="web-back" href="/sessions">← All sessions</a>
+    <div class="web-head">
+      <div class="web-meta" id="meta"></div>
+      <h1 id="title">Session</h1>
+    </div>
+
+    <div id="web-err" class="web-err" hidden></div>
+    <div id="status" class="web-empty">Loading session from your brain-repo…</div>
+    <div id="msgs" class="web-msgs"></div>
+  </main>
+
+  <script src="/config.js" onerror="console.info('site/config.js not present yet.')"></script>
+  <script type="module">
+    import { getSession, readBrainFile } from '/auth.js';
+
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get('mode') || 'chat';
+    const file = params.get('file') || '';
+
+    const errEl = document.getElementById('web-err');
+    const statusEl = document.getElementById('status');
+    const msgsEl = document.getElementById('msgs');
+    const titleEl = document.getElementById('title');
+    const metaEl = document.getElementById('meta');
+
+    function showErr(msg) {
+      statusEl.hidden = true;
+      msgsEl.innerHTML = '';
+      errEl.textContent = msg;
+      errEl.hidden = false;
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // Strip internal protocol tags the model might have emitted.
+    function scrub(s) {
+      return String(s || '')
+        .replace(/<think>[\s\S]*?<\/think>/gi, '')
+        .replace(/<tool_use>[\s\S]*?<\/tool_use>/gi, '')
+        .replace(/<tool_result[^>]*>[\s\S]*?<\/tool_result>/gi, '')
+        .replace(/<\/?(think|tool_use|tool_result|no_thinking)[^>]*>/gi, '')
+        .replace(/<\|[a-zA-Z_]+\|>/g, '')
+        .trim();
+    }
+
+    // Tiny markdown: **bold**, *em*, `code`, preserve newlines.
+    function tinyMd(raw) {
+      let s = escapeHtml(raw);
+      s = s.replace(/`([^`]+)`/g, (_, c) => `<code>${c}</code>`);
+      s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      s = s.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+      return s;
+    }
+
+    function renderMessage(m) {
+      const role = m.role || 'assistant';
+      if (role === 'system' && typeof m.content === 'string' && m.content.startsWith('__project__:')) {
+        return; // skip hidden project marker
+      }
+      const wrap = document.createElement('div');
+      wrap.className = 'web-msg ' + role;
+      const r = document.createElement('div');
+      r.className = 'role';
+      r.textContent = role === 'user' ? 'You' : role === 'assistant' ? 'Cerbral' : role;
+      const b = document.createElement('div');
+      b.className = 'bubble';
+      b.innerHTML = tinyMd(scrub(m.content || ''));
+      wrap.appendChild(r);
+      wrap.appendChild(b);
+      msgsEl.appendChild(wrap);
+    }
+
+    (async () => {
+      if (!file) { showErr('Missing session file.'); return; }
+      const session = await getSession();
+      if (!session) {
+        window.location.replace('/signup?next=/session?mode=' + mode + '&file=' + encodeURIComponent(file));
+        return;
+      }
+      if (!session.provider_token) {
+        showErr('Connect GitHub first at /onboard — Cerbral Web reads straight from your own repo.');
+        return;
+      }
+      let raw;
+      try {
+        raw = await readBrainFile(session, file);
+      } catch (err) {
+        showErr('Could not load this session: ' + (err?.message || err));
+        return;
+      }
+      let data;
+      try { data = JSON.parse(raw); }
+      catch (err) { showErr('Session file isn\'t valid JSON: ' + err.message); return; }
+      titleEl.textContent = data.title || '(Untitled)';
+      if (data.updated_at) {
+        const d = new Date(data.updated_at * 1000);
+        metaEl.textContent = mode.toUpperCase() + ' · last updated ' +
+          d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+      } else {
+        metaEl.textContent = mode.toUpperCase();
+      }
+      statusEl.hidden = true;
+      const messages = Array.isArray(data.messages) ? data.messages : [];
+      if (messages.length === 0) {
+        statusEl.hidden = false;
+        statusEl.textContent = 'This session is empty.';
+        return;
+      }
+      for (const m of messages) renderMessage(m);
+    })();
+  </script>
+</body>
+</html>
