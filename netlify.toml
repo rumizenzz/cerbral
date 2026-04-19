@@ -1,102 +1,216 @@
+headersOrigin = "config"
+redirectsOrigin = "config"
+plugins = []
+
+[functions]
+
+[functions."*"]
+
 [build]
-  publish = "site"
-  command = ""
+# Relative path so builds work on Netlify's CI (not just locally).
+publish = "site"
+publishOrigin = "config"
+# Generate site/config.js at build time from Netlify env vars.
+# See scripts/build-config.sh — reads SUPABASE_URL + SUPABASE_ANON_KEY
+# from the Netlify environment and writes a CERBRAL_CONFIG block the
+# static pages load on boot. config.js stays gitignored; the open-
+# source repo never carries real keys.
+command = "bash scripts/build-config.sh"
 
-# Clean URLs for the auth flow — /signup, /login, /verify, /onboard, /welcome.
-[[redirects]]
-  from = "/signup"
-  to   = "/signup.html"
-  status = 200
-[[redirects]]
-  from = "/login"
-  to   = "/signup.html"
-  status = 200
-# Help Center + common shortcuts.
-[[redirects]]
-  from = "/support"
-  to   = "/support/index.html"
-  status = 200
-[[redirects]]
-  from = "/help"
-  to   = "/support/index.html"
-  status = 200
+[build.environment]
 
-# /check-email legacy → /signup so the card can transform in-place.
-[[redirects]]
-  from = "/check-email"
-  to   = "/signup.html"
-  status = 200
-# Email magic-link button lands on /auth/verify — a code-display page
-# that shows the 6-digit code for the user to type back on their
-# original sign-in browser.
-[[redirects]]
-  from = "/auth/verify"
-  to   = "/auth-verify.html"
-  status = 200
-[[redirects]]
-  from = "/auth/confirm"
-  to   = "/auth-verify.html"
-  status = 200
-[[redirects]]
-  from = "/verify"
-  to   = "/auth-verify.html"
-  status = 200
-[[redirects]]
-  from = "/onboard"
-  to   = "/onboard.html"
-  status = 200
-[[redirects]]
-  from = "/welcome"
-  to   = "/welcome.html"
-  status = 200
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
 
 [[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-    Cache-Control = "public, max-age=3600"
+for = "/*"
 
-# CSS changes frequently in this phase — keep the cache short so
-# iterations appear without a manual hard-refresh. Bump to a longer
-# max-age once the site stabilises.
-[[headers]]
-  for = "/style.css"
-  [headers.values]
-    Cache-Control = "public, max-age=60, must-revalidate"
-[[headers]]
-  for = "/auth.css"
-  [headers.values]
-    Cache-Control = "public, max-age=60, must-revalidate"
-[[headers]]
-  for = "/support/support.css"
-  [headers.values]
-    Cache-Control = "public, max-age=60, must-revalidate"
+[headers.values]
+X-Frame-Options = "DENY"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+Cache-Control = "public, max-age=3600"
 
-# Auth pages should not be cached aggressively — tokens land here.
 [[headers]]
-  for = "/signup.html"
-  [headers.values]
-    Cache-Control = "no-store"
+for = "/style.css"
+
+[headers.values]
+Cache-Control = "public, max-age=60, must-revalidate"
+
 [[headers]]
-  for = "/check-email.html"
-  [headers.values]
-    Cache-Control = "no-store"
+for = "/auth.css"
+
+[headers.values]
+Cache-Control = "public, max-age=60, must-revalidate"
+
 [[headers]]
-  for = "/onboard.html"
-  [headers.values]
-    Cache-Control = "no-store"
+for = "/support/support.css"
+
+[headers.values]
+Cache-Control = "public, max-age=60, must-revalidate"
+
 [[headers]]
-  for = "/welcome.html"
-  [headers.values]
-    Cache-Control = "no-store"
+for = "/signup.html"
+
+[headers.values]
+Cache-Control = "no-store"
+
 [[headers]]
-  for = "/auth-verify.html"
-  [headers.values]
-    Cache-Control = "no-store"
+for = "/check-email.html"
+
+[headers.values]
+Cache-Control = "no-store"
+
 [[headers]]
-  for = "/config.js"
-  [headers.values]
-    Cache-Control = "no-store"
+for = "/onboard.html"
+
+[headers.values]
+Cache-Control = "no-store"
+
+[[headers]]
+for = "/welcome.html"
+
+[headers.values]
+Cache-Control = "no-store"
+
+[[headers]]
+for = "/auth-verify.html"
+
+[headers.values]
+Cache-Control = "no-store"
+
+[[headers]]
+for = "/config.js"
+
+[headers.values]
+Cache-Control = "no-store"
+
+[[redirects]]
+from = "/signup"
+to = "/signup.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/login"
+to = "/signup.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/support"
+to = "/support/index.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/help"
+to = "/support/index.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/check-email"
+to = "/signup.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/auth/verify"
+to = "/auth-verify.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/auth/confirm"
+to = "/auth-verify.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/verify"
+to = "/auth-verify.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/onboard"
+to = "/onboard.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/welcome"
+to = "/welcome.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
