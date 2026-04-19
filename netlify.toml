@@ -11,13 +11,17 @@
   from = "/login"
   to   = "/signup.html"
   status = 200
+# /check-email and /verify both land back on /signup so the card can
+# transform in-place. Supabase's detectSessionInUrl will parse any
+# magic-link tokens in the URL hash and fire onAuthStateChange, which
+# redirects to /onboard.
 [[redirects]]
   from = "/check-email"
-  to   = "/check-email.html"
+  to   = "/signup.html"
   status = 200
 [[redirects]]
   from = "/verify"
-  to   = "/check-email.html"
+  to   = "/signup.html"
   status = 200
 [[redirects]]
   from = "/onboard"

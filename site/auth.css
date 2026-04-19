@@ -288,7 +288,50 @@
   flex-shrink: 0;
 }
 
-/* ---------- Check-email page ---------- */
+/* ---------- In-card "check email" view (/signup after submit) ---------- */
+.card-view[hidden] { display: none; }
+.card-sent {
+  text-align: center;
+  padding: 0.8rem 0.3rem 0.25rem;
+}
+.mailbox-icon {
+  display: inline-flex;
+  padding: 0.95rem;
+  border-radius: 999px;
+  background: rgba(255, 107, 53, 0.10);
+  margin-bottom: 0.9rem;
+}
+@media (prefers-color-scheme: light) {
+  .mailbox-icon { background: #fff0e4; }
+}
+.sent-copy {
+  margin: 0 0 1.3rem;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: var(--fg-muted, #c3a8a2);
+}
+.sent-copy strong {
+  color: var(--fg, #1d0d0e);
+  font-weight: 500;
+  font-family: var(--ff-mono, ui-monospace, monospace);
+  font-size: 0.94em;
+}
+.sent-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.5rem;
+}
+.sent-actions .linkish {
+  color: var(--fg-muted, #6b4a47);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-size: 0.88rem;
+}
+.sent-actions .linkish:hover { color: var(--accent, #d94423); }
+
+/* ---------- Legacy check-email page (kept for compat) ---------- */
 .mail-icon {
   display: inline-flex;
   padding: 0.8rem;
