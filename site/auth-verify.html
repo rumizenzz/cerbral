@@ -31,7 +31,11 @@
   </nav>
 
   <main class="verify-main">
-    <div class="verify-wrap" id="view-code">
+    <div class="verify-wrap" id="view-loading">
+      <div class="welcome-status">Checking…</div>
+    </div>
+
+    <div class="verify-wrap" id="view-code" hidden>
       <h1 class="verify-title">Use verification code to continue</h1>
       <p class="verify-sub">Enter this verification code where you first tried to sign in</p>
       <div class="verify-code" id="big-code">——————</div>
@@ -52,20 +56,46 @@
     </div>
   </main>
 
-  <script>
+  <script src="/config.js" onerror="console.info('site/config.js not present yet.')"></script>
+  <script type="module">
+    import { supabase } from '/auth.js';
+
     // Read the code from the URL hash (fragment — not logged, not in referers).
     // Email template puts it there: /auth/verify#code=690890
     const hash = new URLSearchParams((location.hash || '').replace(/^#/, ''));
     const code = hash.get('code');
-    const codeEl = document.getElementById('big-code');
-    const viewCode = document.getElementById('view-code');
-    const viewError = document.getElementById('view-error');
+    const codeEl   = document.getElementById('big-code');
+    const vLoading = document.getElementById('view-loading');
+    const vCode    = document.getElementById('view-code');
+    const vError   = document.getElementById('view-error');
 
-    if (code && /^[A-Za-z0-9]{4,8}$/.test(code)) {
-      codeEl.textContent = code;
+    if (!code || !/^[A-Za-z0-9]{4,8}$/.test(code)) {
+      vLoading.hidden = true;
+      vError.hidden = false;
     } else {
-      viewCode.hidden = true;
-      viewError.hidden = false;
+      codeEl.textContent = code;
+      // Same-browser case: if the user started sign-up in THIS browser,
+      // we still have the pending email in localStorage. Try to verify
+      // the OTP directly and, on success, redirect to /onboard — the user
+      // never has to copy the code.
+      const pendingEmail = localStorage.getItem('cerbral:pending_email');
+      (async () => {
+        if (pendingEmail) {
+          try {
+            const { error } = await supabase.auth.verifyOtp({
+              email: pendingEmail, token: code, type: 'email',
+            });
+            if (!error) {
+              localStorage.removeItem('cerbral:pending_email');
+              window.location.replace('/onboard');
+              return;
+            }
+          } catch { /* fall through to code-display below */ }
+        }
+        // Cross-device / no-pending: show the code to type elsewhere.
+        vLoading.hidden = true;
+        vCode.hidden = false;
+      })();
     }
 
     document.getElementById('copy-code-btn').addEventListener('click', async (e) => {
