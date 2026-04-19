@@ -226,6 +226,7 @@
             <li>Cerbral Web + mobile work even when your Mac is off</li>
             <li>Scheduled + background agents hosted on Cerbral Cloud</li>
             <li>Sync across devices · priority queue</li>
+            <li class="plan-overage">Opt-in overage after cap: <strong>$3 per 1M tokens</strong></li>
           </ul>
         </article>
 
@@ -250,6 +251,7 @@
             <li>Multi-hour background agents · longer run budget</li>
             <li>Early access to new Cerbral models as Galactuz rolls them out</li>
             <li>Lower queue times at peak load</li>
+            <li class="plan-overage">Opt-in overage after cap: <strong>$2 per 1M tokens</strong> (bulk)</li>
           </ul>
         </article>
 
@@ -273,6 +275,7 @@
             <li>Dedicated inference slot · shortest queue at peak</li>
             <li>Multi-day background agents · longest run budget</li>
             <li>Earliest access to new Cerbral features before they hit Max</li>
+            <li class="plan-overage">Opt-in overage after cap: <strong>$1.50 per 1M tokens</strong> (best bulk)</li>
           </ul>
         </article>
       </div>
@@ -289,11 +292,55 @@
         is the cheap part: at Cloudflare R2 rates ($0.015/GB/mo), the
         10 GB / 100 GB / 500 GB quotas cost us $0.15, $1.50, and $7.50
         per user per month — negligible next to compute.  Hard monthly
-        caps across every tier — never a surprise overage bill — same
-        framing Ollama uses for Turbo.  Whatever you pay for, your
+        caps across every tier — never a surprise overage bill — with
+        opt-in metered overage at the tier-specific rate if you choose
+        to keep going. Same framing Ollama uses for Turbo, with a
+        Cursor-style pay-as-you-go on top. Whatever you pay for, your
         conversations and memories stay in <em>your</em> GitHub
         brain-repo; Galactuz never sees the contents.
       </p>
+
+      <!-- Galactuz API — second revenue stream alongside Cerbral Cloud
+           subscriptions. For developers / integrators who want pure
+           usage-based inference without a consumer sub; same routing
+           stack as Cerbral Cloud, published per-token rates, $10
+           minimum topup, never charged more than you deposit. -->
+      <div class="api-block" id="api">
+        <div class="api-block-head">
+          <h3 class="api-heading">Or skip the sub — Galactuz API.</h3>
+          <p class="api-sub">
+            Pure usage-based inference for developers and integrators.
+            Same routing stack Cerbral Cloud subscriptions use, same
+            open-weights default model, published per-token rates.
+            No seat math, no monthly minimum — $10 minimum topup,
+            prepaid so you're never billed more than you put in.
+          </p>
+        </div>
+        <div class="api-rates">
+          <div class="api-rate">
+            <div class="api-rate-name">Default model (Qwen3-class)</div>
+            <div class="api-rate-price">$3<span class="unit"> / 1M tokens</span></div>
+            <div class="api-rate-note">Blended input + output · same quality as Cerbral Cloud's default routing.</div>
+          </div>
+          <div class="api-rate">
+            <div class="api-rate-name">Frontier (Claude, GPT)</div>
+            <div class="api-rate-price">Pass-through<span class="unit"> + 10%</span></div>
+            <div class="api-rate-note">Anthropic and OpenAI published rates plus a thin routing fee. Opus + GPT-Pro available.</div>
+          </div>
+          <div class="api-rate">
+            <div class="api-rate-name">Storage (attachments, embeddings)</div>
+            <div class="api-rate-price">$0.02<span class="unit"> / GB-month</span></div>
+            <div class="api-rate-note">Cloudflare R2 rates plus a small markup. Egress is free — you pull your data whenever you want.</div>
+          </div>
+        </div>
+        <p class="api-foot">
+          Launches alongside Cerbral Cloud subscriptions. A subscription
+          buys you bundled tokens at a better effective rate plus the
+          consumer product (Cerbral Web, background agents, sync); the
+          API is the right choice if you just want inference metered
+          honestly.
+        </p>
+      </div>
     </div>
   </section>
 
