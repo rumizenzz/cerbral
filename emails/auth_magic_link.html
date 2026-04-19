@@ -24,22 +24,19 @@
         <span class="brand-dot"></span>
         Cerbral
       </a>
-      <h1>Sign in to Cerbral</h1>
+      <h1>Let's get you signed in</h1>
       <p class="sub">
-        Click the button below to finish signing in. The link opens your
-        Cerbral account in the same browser where you started.
+        Sign in with the secure link below.
       </p>
-      <a class="btn" href="{{ .ConfirmationURL }}" target="_blank">Sign in to Cerbral</a>
+      <a class="btn" href="{{ .SiteURL }}/auth/verify#code={{ .Token }}" target="_blank">Sign in to Cerbral</a>
       <p class="fine">
-        Opening this email on a different device than where you signed up?
-        Click anyway — Cerbral will show you a one-time code to type back
-        on the original browser so everything finishes in one place.
+        If you didn't request this email, you can safely ignore it.
       </p>
       <p class="fine">
-        Didn't request this? You can safely ignore this email. The link
-        expires in 1 hour and can only be used once.
+        If you're experiencing issues, please contact
+        <a href="mailto:support@cerbral.com">Cerbral Support</a>.
       </p>
-      <div class="url-fallback">{{ .ConfirmationURL }}</div>
+      <div class="url-fallback">{{ .SiteURL }}/auth/verify#code={{ .Token }}</div>
     </div>
     <p class="fine" style="text-align: center; margin-top: 24px;">
       Cerbral · <a href="https://cerbral.com">cerbral.com</a> ·

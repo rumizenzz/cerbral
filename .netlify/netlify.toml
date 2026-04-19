@@ -1,6 +1,6 @@
 headersOrigin = "config"
+redirectsOrigin = "config"
 plugins = []
-redirects = []
 
 [functions]
 
@@ -39,3 +39,135 @@ for = "/style.css"
 
 [headers.values]
 Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/signup.html"
+
+[headers.values]
+Cache-Control = "no-store"
+
+[[headers]]
+for = "/check-email.html"
+
+[headers.values]
+Cache-Control = "no-store"
+
+[[headers]]
+for = "/onboard.html"
+
+[headers.values]
+Cache-Control = "no-store"
+
+[[headers]]
+for = "/welcome.html"
+
+[headers.values]
+Cache-Control = "no-store"
+
+[[headers]]
+for = "/auth-verify.html"
+
+[headers.values]
+Cache-Control = "no-store"
+
+[[headers]]
+for = "/config.js"
+
+[headers.values]
+Cache-Control = "no-store"
+
+[[redirects]]
+from = "/signup"
+to = "/signup.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/login"
+to = "/signup.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/check-email"
+to = "/signup.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/auth/verify"
+to = "/auth-verify.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/auth/confirm"
+to = "/auth-verify.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/verify"
+to = "/auth-verify.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/onboard"
+to = "/onboard.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/welcome"
+to = "/welcome.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]

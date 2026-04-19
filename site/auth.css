@@ -314,48 +314,125 @@
   }
 }
 
-/* ---------- In-card "check email" view (/signup after submit) ---------- */
+/* ---------- In-card "enter code" view (/signup after submit) ---------- */
 .card-view[hidden] { display: none; }
 .card-sent {
   text-align: center;
-  padding: 0.8rem 0.3rem 0.25rem;
-}
-.mailbox-icon {
-  display: inline-flex;
-  padding: 0.95rem;
-  border-radius: 999px;
-  background: rgba(255, 107, 53, 0.10);
-  margin-bottom: 0.9rem;
-}
-@media (prefers-color-scheme: light) {
-  .mailbox-icon { background: #fff0e4; }
+  padding: 0.2rem 0.3rem 0.25rem;
 }
 .sent-copy {
-  margin: 0 0 1.3rem;
-  font-size: 0.98rem;
+  margin: 0 0 1.1rem;
+  font-size: 0.95rem;
   line-height: 1.55;
-  color: var(--fg-muted, #c3a8a2);
+  color: var(--fg-muted, #6b4a47);
 }
 .sent-copy strong {
   color: var(--fg, #1d0d0e);
   font-weight: 500;
+}
+.otp-input {
+  text-align: center;
   font-family: var(--ff-mono, ui-monospace, monospace);
-  font-size: 0.94em;
+  letter-spacing: 0.35em;
+  font-size: 1.1rem;
+  font-weight: 500;
 }
-.sent-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.55rem;
-  margin-top: 0.5rem;
+.otp-input::placeholder {
+  letter-spacing: 0.02em;
+  font-family: inherit;
+  font-weight: 400;
+  font-size: 0.95rem;
 }
-.sent-actions .linkish {
+.auth-btn-verify {
+  background: #1d0d0e;
+  color: #fff;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.15rem;
+}
+.auth-btn-verify:hover:not(:disabled) { filter: brightness(1.18); }
+.auth-btn-verify:disabled { opacity: 0.6; cursor: progress; }
+.sent-small {
+  margin: 0.9rem 0 0;
+  font-size: 0.82rem;
+  color: var(--fg-subtle, #8b706c);
+}
+.sent-small .linkish {
   color: var(--fg-muted, #6b4a47);
   text-decoration: underline;
   text-underline-offset: 3px;
-  font-size: 0.88rem;
 }
-.sent-actions .linkish:hover { color: var(--accent, #d94423); }
+.sent-small .linkish:hover { color: var(--accent, #d94423); }
+
+/* ---------- /auth/verify cross-device code-display page ---------- */
+.auth-verify-page .topbar {
+  border-bottom: 1px solid var(--rule, #f3d7c8);
+  background: transparent;
+}
+.brand-center { margin: 0 auto; }
+.verify-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem;
+  text-align: center;
+}
+.verify-wrap {
+  max-width: 520px;
+  width: 100%;
+}
+.verify-title {
+  font-size: clamp(1.7rem, 3.5vw, 2.3rem);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.6rem;
+  line-height: 1.15;
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+.verify-sub {
+  font-size: 1rem;
+  color: var(--fg-muted, #6b4a47);
+  margin: 0 0 2.2rem;
+}
+.verify-code {
+  display: inline-block;
+  padding: 1.2rem 2.3rem;
+  border: 1px solid var(--rule-strong, #e9c3ae);
+  border-radius: 14px;
+  font-family: var(--ff-mono, ui-monospace, 'SF Mono', Menlo, monospace);
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--fg, #1d0d0e);
+  background: transparent;
+  min-width: 280px;
+}
+.verify-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 1.6rem;
+  padding: 0.6rem 1.1rem;
+  background: #1d0d0e;
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: filter 0.12s, transform 0.08s;
+}
+.verify-copy-btn:hover { filter: brightness(1.18); }
+.verify-copy-btn.copied { background: #1e7e4a; }
+.verify-copy-btn:active { transform: translateY(1px); }
 
 /* ---------- Legacy check-email page (kept for compat) ---------- */
 .mail-icon {

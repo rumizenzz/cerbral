@@ -11,17 +11,25 @@
   from = "/login"
   to   = "/signup.html"
   status = 200
-# /check-email and /verify both land back on /signup so the card can
-# transform in-place. Supabase's detectSessionInUrl will parse any
-# magic-link tokens in the URL hash and fire onAuthStateChange, which
-# redirects to /onboard.
+# /check-email legacy → /signup so the card can transform in-place.
 [[redirects]]
   from = "/check-email"
   to   = "/signup.html"
   status = 200
+# Email magic-link button lands on /auth/verify — a code-display page
+# that shows the 6-digit code for the user to type back on their
+# original sign-in browser.
+[[redirects]]
+  from = "/auth/verify"
+  to   = "/auth-verify.html"
+  status = 200
+[[redirects]]
+  from = "/auth/confirm"
+  to   = "/auth-verify.html"
+  status = 200
 [[redirects]]
   from = "/verify"
-  to   = "/signup.html"
+  to   = "/auth-verify.html"
   status = 200
 [[redirects]]
   from = "/onboard"
@@ -61,6 +69,10 @@
     Cache-Control = "no-store"
 [[headers]]
   for = "/welcome.html"
+  [headers.values]
+    Cache-Control = "no-store"
+[[headers]]
+  for = "/auth-verify.html"
   [headers.values]
     Cache-Control = "no-store"
 [[headers]]

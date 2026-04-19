@@ -87,31 +87,34 @@
             </p>
           </div>
 
-          <!-- VIEW 2: magic link sent (same URL, same card, content swaps) -->
+          <!-- VIEW 2: email sent (same URL, same card, content swaps) -->
           <div class="card-view card-sent" id="view-sent" hidden>
-            <div class="mailbox-icon" aria-hidden="true">
-              <svg viewBox="0 0 64 64" width="44" height="44">
-                <defs>
-                  <linearGradient id="mailGrad" x1="0" x2="1" y1="0" y2="1">
-                    <stop offset="0%"  stop-color="#ff6b35"/>
-                    <stop offset="100%" stop-color="#ff3b5c"/>
-                  </linearGradient>
-                </defs>
-                <path fill="none" stroke="url(#mailGrad)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
-                      d="M14 28c0-3.3 2.7-6 6-6h18c3.3 0 6 2.7 6 6v20H14V28z"/>
-                <path fill="none" stroke="url(#mailGrad)" stroke-width="2.2" stroke-linecap="round"
-                      d="M14 34h30M38 22v-6"/>
-                <circle cx="38" cy="14" r="2" fill="url(#mailGrad)"/>
-              </svg>
-            </div>
             <p class="sent-copy">
-              To continue, click the link sent to<br>
+              Enter the verification code sent to<br>
               <strong id="sent-email">your inbox</strong>
             </p>
-            <div class="sent-actions">
-              <button type="button" class="linkish" id="enter-code-btn">Enter verification code</button>
-              <button type="button" class="linkish" id="resend-btn">Resend email</button>
-            </div>
+            <form id="otp-form" autocomplete="one-time-code">
+              <label class="sr-only" for="otp">Verification code</label>
+              <input
+                id="otp"
+                name="otp"
+                type="text"
+                inputmode="numeric"
+                autocomplete="one-time-code"
+                pattern="[0-9]*"
+                maxlength="6"
+                required
+                placeholder="Enter verification code"
+                class="auth-input otp-input">
+              <button type="submit" class="auth-btn auth-btn-verify" id="otp-btn">
+                Verify email address
+              </button>
+            </form>
+            <p class="sent-small">
+              Not seeing the email in your inbox?
+              <button type="button" class="linkish" id="resend-btn">Try sending again</button>
+            </p>
+            <div class="auth-error" id="otp-error" hidden role="alert"></div>
           </div>
         </div>
 
@@ -172,8 +175,11 @@
     const ghBtn     = document.getElementById('gh-btn');
     const sentEmail = document.getElementById('sent-email');
     const resendBtn = document.getElementById('resend-btn');
-    const enterCode = document.getElementById('enter-code-btn');
     const errBox    = document.getElementById('auth-error');
+    const otpForm   = document.getElementById('otp-form');
+    const otpInput  = document.getElementById('otp');
+    const otpBtn    = document.getElementById('otp-btn');
+    const otpErr    = document.getElementById('otp-error');
 
     function showSent(email) {
       sentEmail.textContent = email;
@@ -262,9 +268,38 @@
       }
     });
 
-    enterCode.addEventListener('click', () => {
-      // Cross-device pairing code flow lands in v1.1. Point at docs for now.
-      window.open('https://github.com/rumizenzz/cerbral#cross-device-signin', '_blank');
+    // OTP verify: user types the 6-digit code from their email and we
+    // complete sign-in on THIS browser. The magic-link button in the
+    // email does the same thing via /auth/confirm.
+    otpForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      otpErr.hidden = true;
+      const email = sentEmail.textContent;
+      const token = otpInput.value.trim();
+      if (!/^\d{6}$/.test(token)) {
+        otpErr.textContent = 'Enter the 6-digit code from your email.';
+        otpErr.hidden = false;
+        return;
+      }
+      otpBtn.disabled = true;
+      otpBtn.textContent = 'Verifying…';
+      try {
+        const { error } = await supabase.auth.verifyOtp({
+          email, token, type: 'email',
+        });
+        if (error) throw error;
+        // onAuthStateChange will pick up the new session and redirect.
+      } catch (err) {
+        otpBtn.disabled = false;
+        otpBtn.textContent = 'Verify email address';
+        otpErr.textContent = friendly(err);
+        otpErr.hidden = false;
+      }
+    });
+    // Auto-submit when 6 digits are entered.
+    otpInput.addEventListener('input', () => {
+      otpInput.value = otpInput.value.replace(/\D/g, '').slice(0, 6);
+      if (otpInput.value.length === 6) otpForm.requestSubmit();
     });
   </script>
 </body>
