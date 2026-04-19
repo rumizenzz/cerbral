@@ -138,13 +138,56 @@
   padding: 0.75rem 0.95rem;
   border-radius: 10px;
   border: 1px solid var(--rule-strong, #3a272b);
-  background: #0f0a0c;
+  background: var(--bg-card, #1a1215);
   color: var(--fg, #f6ede9);
   font-family: inherit;
   font-size: 0.95rem;
   margin-bottom: 0.65rem;
 }
-.auth-input:focus { outline: none; border-color: var(--accent, #ff6b35); }
+.auth-input::placeholder { color: var(--fg-subtle, #8b706c); }
+.auth-input:focus {
+  outline: none;
+  border-color: var(--accent, #ff6b35);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.12);
+}
+/* Safari / Chrome autofill override — stop the yellow-on-white smash. */
+.auth-input:-webkit-autofill,
+.auth-input:-webkit-autofill:hover,
+.auth-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--fg, #1d0d0e);
+  -webkit-box-shadow: 0 0 0 1000px var(--bg-card, #ffffff) inset;
+  caret-color: var(--fg, #1d0d0e);
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+@media (prefers-color-scheme: light) {
+  .auth-input {
+    background: #ffffff;
+    border-color: #e9c3ae;
+  }
+  .auth-card {
+    background: #ffffff;
+    border-color: #f3d7c8;
+  }
+  .auth-card-centered {
+    background: #ffffff;
+    border-color: #f3d7c8;
+  }
+  .callout {
+    background: #fff0e4;
+    border-color: #f3d7c8;
+  }
+  .gh-ask {
+    background: #fff6f0;
+    border-color: #f3d7c8;
+  }
+  .gh-scopes .tag {
+    background: #fff6f0;
+    color: #d94423;
+    border-color: #f3d7c8;
+  }
+  .auth-btn-github { background: #1d0d0e; border-color: #1d0d0e; color: #ffffff; }
+}
 .auth-divider {
   display: flex;
   align-items: center;
