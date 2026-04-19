@@ -236,6 +236,7 @@ export async function saveProfile({ githubHandle, brainRepoUrl }) {
  * install; clicking this URL focuses Cerbral.app and delivers the tokens
  * which it then stores in the OS Keychain.
  */
+// cache-bust: 2026-04-19T09:55 — force Netlify edge refresh for v2 handoff
 export function buildDesktopHandoff(session, { brainRepoUrl, githubHandle }) {
   const payload = {
     access_token: session.access_token,
