@@ -2,6 +2,16 @@
    Shares palette + topbar; adds the sign-up card, centred layouts,
    progress indicator, and GitHub-ask panel. */
 
+/* Enforce the HTML `hidden` attribute site-wide. The spec says
+   `hidden` is equivalent to `display: none`, but any rule that
+   specifies an explicit `display:` value (e.g. `display: grid` on
+   a modal backdrop, `display: flex` on a composer) silently wins
+   the cascade and leaves the element visible.  This `!important`
+   rule re-establishes `hidden` as the single source of truth, so
+   `el.hidden = true` in JS just works regardless of the element's
+   non-hidden display mode. */
+[hidden] { display: none !important; }
+
 .sr-only {
   position: absolute;
   width: 1px; height: 1px;

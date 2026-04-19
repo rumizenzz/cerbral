@@ -241,21 +241,15 @@ force = false
 
 [redirects.headers]
 
-# Fallback while the Mac installer bundle isn't on GitHub Releases yet.
-# Netlify serves /downloads/Cerbral.dmg from disk if it exists; otherwise
-# this rule (force = false) catches the 404 and redirects to the
-# coming-soon page.
-#
-# To ship: run `make dmg` in cerbral-desktop (produces an unsigned
-# drag-to-Applications build), upload the .dmg as `Cerbral.dmg` to
-# github.com/rumizenzz/cerbral-desktop/releases/latest, and flip the
-# `to = ` line below to:
-#   to = "https://github.com/rumizenzz/cerbral-desktop/releases/latest/download/Cerbral.dmg"
-# Leaving `force = false` means a future site-hosted build would still
-# win — useful if we ever move off GitHub Releases.
+# Install button on /welcome and any direct link to /downloads/Cerbral.dmg
+# both land here. We 302 to the `latest` release asset on GitHub so
+# swapping builds is a one-shot `gh release create vN.N.N ...` — no
+# cerbral-public change needed per-release. If we ever move the build
+# off GitHub and drop a .dmg directly into site/downloads/, `force =
+# false` means the site-hosted copy wins automatically.
 [[redirects]]
 from = "/downloads/Cerbral.dmg"
-to = "/downloads/"
+to = "https://github.com/rumizenzz/cerbral-desktop/releases/latest/download/Cerbral.dmg"
 status = 302.0
 force = false
 
