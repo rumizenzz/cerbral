@@ -241,7 +241,16 @@ export function buildDesktopHandoff(session, { brainRepoUrl, githubHandle }) {
     access_token: session.access_token,
     refresh_token: session.refresh_token,
     expires_at: session.expires_at,
+    // provider_token is the GitHub OAuth token — Cerbral Desktop needs
+    // this to verify the brain is connected AND to push commits to the
+    // user's cerbral-brain repo. Without it, desktop sees the session
+    // but treats the brain as disconnected.
+    provider_token: session.provider_token,
+    provider_refresh_token: session.provider_refresh_token,
     email: session.user?.email,
+    // Surface the full user block so desktop can read `user.identities`
+    // (for GitHub-linked detection) without re-fetching.
+    user: session.user,
     github_handle: githubHandle,
     brain_repo_url: brainRepoUrl,
   };
