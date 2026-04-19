@@ -38,7 +38,34 @@ Cache-Control = "public, max-age=3600"
 for = "/style.css"
 
 [headers.values]
-Cache-Control = "public, max-age=31536000, immutable"
+Cache-Control = "public, max-age=60, must-revalidate"
+
+[[headers]]
+for = "/auth.css"
+
+[headers.values]
+Cache-Control = "public, max-age=60, must-revalidate"
+
+[[headers]]
+for = "/support/support.css"
+
+[headers.values]
+Cache-Control = "public, max-age=60, must-revalidate"
+
+# auth.js changes as the /signup + /onboard flow evolves (e.g. added
+# getProfile() for returning-user detection). Keep the cache window
+# short so fixes land in-browser without users having to hard-refresh.
+[[headers]]
+for = "/auth.js"
+
+[headers.values]
+Cache-Control = "public, max-age=60, must-revalidate"
+
+[[headers]]
+for = "/main.js"
+
+[headers.values]
+Cache-Control = "public, max-age=60, must-revalidate"
 
 [[headers]]
 for = "/signup.html"
@@ -91,6 +118,30 @@ force = false
 [[redirects]]
 from = "/login"
 to = "/signup.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/support"
+to = "/support/index.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/help"
+to = "/support/index.html"
 status = 200.0
 force = false
 
