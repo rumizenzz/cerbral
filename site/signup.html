@@ -371,7 +371,7 @@
 
   <script src="/config.js" onerror="console.info('site/config.js not present yet — scaffolding mode.')"></script>
   <script type="module">
-    import { sendMagicLink, connectGitHub, supabase } from '/auth.js';
+    import { sendMagicLink, connectGitHub, supabase } from '/auth.js?v=2';
 
     const viewEmail = document.getElementById('view-email');
     const viewSent  = document.getElementById('view-sent');

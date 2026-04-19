@@ -87,7 +87,7 @@
 
   <script src="/config.js" onerror="console.info('site/config.js not present yet.')"></script>
   <script type="module">
-    import { getSession, readBrainFile } from '/auth.js';
+    import { getSession, readBrainFile } from '/auth.js?v=2';
 
     const params = new URLSearchParams(window.location.search);
     const mode = params.get('mode') || 'chat';

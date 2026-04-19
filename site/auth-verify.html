@@ -58,7 +58,7 @@
 
   <script src="/config.js" onerror="console.info('site/config.js not present yet.')"></script>
   <script type="module">
-    import { supabase } from '/auth.js';
+    import { supabase } from '/auth.js?v=2';
 
     // Read the code from the URL hash (fragment — not logged, not in referers).
     // Email template puts it there: /auth/verify#code=690890

@@ -75,7 +75,7 @@
 
   <script src="/config.js" onerror="console.info('site/config.js not present yet.')"></script>
   <script type="module">
-    import { supabase, connectGitHub, getSession, getProfile, buildDesktopHandoff } from '/auth.js';
+    import { supabase, connectGitHub, getSession, getProfile, buildDesktopHandoff } from '/auth.js?v=2';
 
     // Routing on /onboard is conditional on the user's existing state:
     //
