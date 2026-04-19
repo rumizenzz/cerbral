@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sign in — Cerbral</title>
-  <meta name="description" content="Sign in to Cerbral — your own open-source personal AI that runs on your machine and lives in your private GitHub repo.">
+  <meta name="description" content="Sign in to Cerbral — your own personal AI that runs on your machine. The AI is free. Your data lives in your private GitHub repo, not ours.">
   <meta name="theme-color" content="#0a0607">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ff6b35'/%3E%3Cstop offset='100%25' stop-color='%23ff3b5c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext y='.9em' font-size='90' fill='url(%23g)'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="/style.css">
@@ -43,7 +43,7 @@
       <section class="auth-left">
         <p class="eyebrow">
           <span class="eyebrow-dot"></span>
-          Open-source · lives in your GitHub · yours forever
+          Free personal AI · lives in your GitHub · yours forever
         </p>
         <h1>
           Personal AI.<br>
@@ -52,7 +52,8 @@
         <p class="lede">
           Your own AI that runs on your machine, learns with you, and
           stores everything it learns in <em>your</em> private GitHub
-          repo — not ours. Free forever. Open source.
+          repo — not ours. Cerbral the AI is free; if you ever want more
+          compute or storage, Cerbral Cloud has paid tiers on top.
         </p>
 
         <div class="auth-card" id="auth-card">
@@ -81,11 +82,11 @@
             </form>
             <div class="auth-error" id="auth-error" hidden role="alert"></div>
             <p class="auth-legal">
-              By continuing you agree to Cerbral being
-              <a href="https://github.com/rumizenzz/cerbral/blob/main/LICENSE">open-source MIT</a>
-              and to the
-              <a href="/#principles">principles of the project</a> — we
-              never own or sell your data.
+              By continuing you agree to the
+              <a href="/#principles">principles of Cerbral</a> — we
+              never own or sell your data. Only your email, GitHub handle,
+              and brain-repo URL land in our database; everything else
+              stays in your GitHub.
             </p>
           </div>
 
@@ -147,33 +148,38 @@
             <circle cx="100" cy="100" r="26" fill="url(#bigBrand)" filter="url(#bigGlow)"/>
           </svg>
           <h2>
-            The Claude of<br>
-            <span class="accent">open source.</span>
+            Your own<br>
+            <span class="accent">personal AI.</span>
           </h2>
           <p class="auth-brand-sub">
-            Not a cloud product with a free tier — a self-improving
-            personal AI you run, own, and trust. Your memories, your
-            sessions, your decisions. Never a data centre.
+            A self-improving personal AI you run, own, and trust. Your
+            memories, your sessions, your decisions — in your GitHub,
+            never in our data centre. Cerbral Cloud exists if you ever
+            want more compute or storage; it's optional and paid.
           </p>
           <ul class="auth-bullets">
             <li><span class="dot"></span>Runs entirely on your machine via local Ollama</li>
             <li><span class="dot"></span>Your brain repo is a private GitHub repo you control</li>
             <li><span class="dot"></span>Self-improves using the Hermes Agent loop</li>
-            <li><span class="dot"></span>MIT-licensed · no telemetry · no paywall</li>
+            <li><span class="dot"></span>Free AI · no telemetry · Cerbral Cloud is optional</li>
           </ul>
         </div>
       </aside>
     </div>
   </main>
 
-  <!-- Explore plans — Cerbral's playful take on Claude's Free/Pro/Max. -->
+  <!-- Plans — Free Cerbral (the AI) + optional paid Cerbral Cloud tiers
+       (compute + storage on Galactuz-managed infrastructure). Numbers
+       below are the tier shape we're planning to launch with; exact
+       limits finalise before billing goes live. -->
   <section class="plans-section" id="plans">
     <div class="container">
-      <h2 class="plans-heading">Explore plans</h2>
-      <div class="plans-toggle" role="tablist" aria-label="Plans">
-        <button class="plans-tab active" type="button">You</button>
-        <button class="plans-tab" type="button">You, but again</button>
-      </div>
+      <h2 class="plans-heading">Cerbral is free. Cerbral Cloud is optional.</h2>
+      <p class="plans-sub">
+        You never pay for the AI itself — it runs on your Mac. Cerbral
+        Cloud is a separate subscription if you want extra compute or
+        storage on top; use as much or as little as you want.
+      </p>
 
       <div class="plans-grid">
         <article class="plan-card">
@@ -184,44 +190,42 @@
             </svg>
           </div>
           <h3 class="plan-name">Free</h3>
-          <p class="plan-sub">For everyone.</p>
+          <p class="plan-sub">Your own Cerbral, on your own Mac.</p>
           <div class="plan-price"><span class="plan-dollar">$0</span></div>
-          <p class="plan-note">Free for everyone</p>
+          <p class="plan-note">The AI itself is always free</p>
           <a class="plan-btn" href="#top">Get Cerbral</a>
           <ul class="plan-features">
             <li>Full Cerbral — same build, no "lite" edition</li>
             <li>Runs entirely on your machine via local Ollama</li>
             <li>Your brain repo is a private GitHub repo you own</li>
             <li>Self-improves via the Hermes Agent loop</li>
-            <li>Notifications to email, SMS, Discord, Slack — your credentials, never ours</li>
-            <li>Desktop app + CLI + cerbral.com account</li>
+            <li>Desktop app + Cerbral Web (reads your local AI via a secure tunnel)</li>
             <li>Works offline · phones home: never</li>
           </ul>
         </article>
 
         <article class="plan-card featured">
-          <div class="plan-ribbon">Still free</div>
+          <div class="plan-ribbon">Most popular</div>
           <div class="plan-icon" aria-hidden="true">
             <svg viewBox="0 0 60 60" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="30" cy="30" r="14"/>
               <path d="M30 10v4M30 46v4M10 30h4M46 30h4M16 16l3 3M41 41l3 3M16 44l3-3M41 19l3-3"/>
             </svg>
           </div>
-          <h3 class="plan-name">Free</h3>
-          <p class="plan-sub">For everyday you.</p>
-          <div class="plan-price"><span class="plan-dollar">$0</span></div>
-          <p class="plan-note">Still $0, per whatever you want</p>
-          <a class="plan-btn plan-btn-primary" href="#top">Get Cerbral</a>
-          <p class="plan-commit">No commitment · cancel anytime · can't cancel what you never bought</p>
+          <h3 class="plan-name">Cerbral Cloud · Pro</h3>
+          <p class="plan-sub">Cerbral on the web without your Mac on.</p>
+          <div class="plan-price"><span class="plan-dollar">$20</span><span class="plan-unit">/mo</span></div>
+          <p class="plan-note">Or $192/year · save 20%</p>
+          <a class="plan-btn plan-btn-primary" href="#top">Start 7-day trial</a>
+          <p class="plan-commit">No surprise bills · hard caps, not metered overage</p>
           <p class="plan-features-title">Everything in Free, plus:</p>
           <ul class="plan-features">
-            <li>More usage* <span class="asterisk-note">(*the same infinity as Free)</span></li>
-            <li>Cerbral Code (agent mode)</li>
-            <li>Unlimited projects — literally no meter</li>
-            <li>Access to research models · whichever ones your machine fits</li>
-            <li>Memory across conversations (this is the whole point of Cerbral)</li>
-            <li>More Cerbral models · any open-weight LLM Ollama supports</li>
-            <li>Cerbral in Chrome · we'll ship an extension</li>
+            <li><strong>~5M tokens/mo</strong> of cloud inference on Cerbral's default model (Qwen3-class)</li>
+            <li><strong>$5 Boost credit pool</strong> for routing to frontier models (Claude Sonnet, GPT) on demand</li>
+            <li><strong>10 GB Cerbral Cloud storage</strong> for embeddings, attachments, scratch — brain-repo stays primary</li>
+            <li>Cerbral Web + mobile work even when your Mac is off</li>
+            <li>Scheduled + background agents hosted on Cerbral Cloud</li>
+            <li>Sync across devices · priority queue</li>
           </ul>
         </article>
 
@@ -232,29 +236,34 @@
               <circle cx="30" cy="30" r="4"/>
             </svg>
           </div>
-          <h3 class="plan-name">Free</h3>
-          <p class="plan-sub">5-20× more usage than Free.</p>
-          <div class="plan-price"><span class="plan-dollar">From $0</span></div>
-          <p class="plan-note">Per whatever, billed nowhen</p>
+          <h3 class="plan-name">Cerbral Cloud · Max</h3>
+          <p class="plan-sub">Heavy Cerbral Code usage, long-running agents.</p>
+          <div class="plan-price"><span class="plan-dollar">$100</span><span class="plan-unit">/mo</span></div>
+          <p class="plan-note">Or $960/year · save 20%</p>
           <a class="plan-btn" href="#top">Get Cerbral</a>
-          <p class="plan-commit">No commitment · cancel anytime · we literally don't bill</p>
-          <p class="plan-features-title">Everything in Free, plus:</p>
+          <p class="plan-commit">No surprise bills · hard caps · cancel anytime</p>
+          <p class="plan-features-title">Everything in Pro, plus:</p>
           <ul class="plan-features">
-            <li>Choose 5× or 20× more usage than Free*</li>
-            <li>Higher output limits for all tasks (there were none to begin with)</li>
-            <li>Early access to advanced Cerbral features (once they land on main)</li>
-            <li>Priority access at high traffic times (no traffic — it's local)</li>
-            <li>Cerbral in PowerPoint <em>(possibly, one day, maybe never)</em></li>
-            <li>A star on GitHub from us, metaphorically</li>
+            <li><strong>~30M tokens/mo</strong> (6× Pro) on default model</li>
+            <li><strong>$25 Boost credit</strong> for frontier models — Claude Opus, GPT-Pro class</li>
+            <li><strong>100 GB Cerbral Cloud storage</strong></li>
+            <li>Multi-hour background agents · longer run budget</li>
+            <li>Early access to new Cerbral models as Galactuz rolls them out</li>
+            <li>Lower queue times at peak load</li>
           </ul>
         </article>
       </div>
 
       <p class="plans-footnote">
-        *Usage limits apply (they don't). Prices shown don't include
-        applicable tax (there's no price). Prices and plans are subject
-        to change at Cerbral's discretion (but they won't, because they're
-        all zero).
+        Cerbral Cloud uses open-weights models (Qwen3-class) as the
+        default backend so the $20 and $100 tiers are sustainable
+        without rate-limit roulette; frontier models are available via
+        a Boost credit pool per tier. Hard monthly caps — never a
+        surprise overage bill. Whatever you pay for, your conversations
+        and memories live in <em>your</em> GitHub brain-repo. Galactuz
+        never sees the contents. Pricing above is the planned launch
+        shape; final limits may shift slightly after 60 days of real
+        usage data.
       </p>
     </div>
   </section>
@@ -265,11 +274,12 @@
       <h2 class="faq-heading">Frequently asked questions</h2>
       <details class="faq-item">
         <summary>What is Cerbral and how does it work?</summary>
-        <p>Cerbral is an open-source personal AI that runs on your own
-        machine (via local Ollama) and stores everything it learns in
-        <em>your</em> private GitHub repo. We never see your data. You
-        sign in to cerbral.com just so your desktop app can find your
-        brain repo — nothing else is stored on our side.</p>
+        <p>Cerbral is a personal AI that runs on your own machine (via
+        local Ollama) and stores everything it learns in <em>your</em>
+        private GitHub repo. We never see your conversations. You sign
+        in to cerbral.com just so your desktop app can find your brain
+        repo — only your email, GitHub handle, and brain-repo URL land
+        in our database.</p>
       </details>
       <details class="faq-item">
         <summary>What should I use Cerbral for?</summary>
@@ -279,23 +289,20 @@
         sticks with <em>you</em>, not with them.</p>
       </details>
       <details class="faq-item">
-        <summary>How much does it cost to use?</summary>
-        <p>Nothing. Cerbral is MIT-licensed and free forever. You run
-        inference on your own machine, so the only costs are electricity
-        and whatever API keys you choose to plug in for extra backends.
-        We have no paid tier and no plans to add one.</p>
+        <summary>How much does it cost?</summary>
+        <p>The AI is free. You run inference on your own machine, so
+        there's no metering and no per-token bill — just electricity.
+        Cerbral Cloud is a separate, optional subscription if you ever
+        want extra compute or storage on top; pricing lives on
+        <a href="#plans">the plans section</a>.</p>
       </details>
       <details class="faq-item">
         <summary>Is my data really private?</summary>
         <p>Yes. Your conversations, memories, and sessions live in your
-        own private GitHub repo on your GitHub account. Cerbral Cloud
-        stores only your email, GitHub handle, and the URL to your
-        brain repo — nothing else.</p>
-      </details>
-      <details class="faq-item">
-        <summary>Why is the Explore plans section a joke?</summary>
-        <p>Because Cerbral has no paid tier and never will. Every plan
-        is the same plan: the open-source one you own forever.</p>
+        own private GitHub repo on your GitHub account. Cerbral's own
+        database stores only your email, GitHub handle, the URL to your
+        brain repo, and a payment method if you subscribe to Cerbral
+        Cloud — nothing else.</p>
       </details>
     </div>
   </section>
@@ -312,7 +319,7 @@
           <span>Cerbral</span>
         </a>
         <p class="footer-by">BY <a href="https://github.com/rumizenzz">RUMI</a></p>
-        <p class="footer-copy">© 2026 · Open-source · MIT</p>
+        <p class="footer-copy">© 2026 · Cerbral by Galactuz</p>
         <div class="footer-social">
           <a href="https://github.com/rumizenzz/cerbral" aria-label="GitHub">
             <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.7 2.7 1.2 3.4.9.1-.7.4-1.2.7-1.5-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2 1-.3 2-.4 3-.4s2 .1 3 .4c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.2 2.8.1 3.1.8.8 1.2 1.9 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
@@ -363,8 +370,12 @@
         <h4>Terms &amp; policies</h4>
         <a href="/privacy">Privacy policy</a>
         <a href="/terms">Terms of service</a>
-        <a href="https://github.com/rumizenzz/cerbral/blob/main/LICENSE">MIT License</a>
         <a href="https://github.com/rumizenzz/cerbral/security">Responsible disclosure</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="https://galactuz.com">Galactuz</a>
+        <a href="#plans">Plans &amp; pricing</a>
       </div>
     </div>
   </footer>
