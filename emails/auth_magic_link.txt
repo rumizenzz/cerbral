@@ -1,0 +1,18 @@
+Sign in to Cerbral
+==================
+
+Click this link to finish signing in:
+
+{{ .ConfirmationURL }}
+
+The link opens your Cerbral account in the same browser where you
+started. Opening this email on a different device? Click the link
+anyway — Cerbral will show you a one-time code to type back on the
+original browser so everything finishes in one place.
+
+Didn't request this? You can safely ignore this email. The link
+expires in 1 hour and can only be used once.
+
+--
+Cerbral — your own open-source personal AI.
+cerbral.com · github.com/rumizenzz/cerbral

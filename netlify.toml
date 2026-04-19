@@ -2,6 +2,32 @@
   publish = "site"
   command = ""
 
+# Clean URLs for the auth flow — /signup, /login, /verify, /onboard, /welcome.
+[[redirects]]
+  from = "/signup"
+  to   = "/signup.html"
+  status = 200
+[[redirects]]
+  from = "/login"
+  to   = "/signup.html"
+  status = 200
+[[redirects]]
+  from = "/check-email"
+  to   = "/check-email.html"
+  status = 200
+[[redirects]]
+  from = "/verify"
+  to   = "/check-email.html"
+  status = 200
+[[redirects]]
+  from = "/onboard"
+  to   = "/onboard.html"
+  status = 200
+[[redirects]]
+  from = "/welcome"
+  to   = "/welcome.html"
+  status = 200
+
 [[headers]]
   for = "/*"
   [headers.values]
@@ -15,3 +41,25 @@
   for = "/style.css"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Auth pages should not be cached aggressively — tokens land here.
+[[headers]]
+  for = "/signup.html"
+  [headers.values]
+    Cache-Control = "no-store"
+[[headers]]
+  for = "/check-email.html"
+  [headers.values]
+    Cache-Control = "no-store"
+[[headers]]
+  for = "/onboard.html"
+  [headers.values]
+    Cache-Control = "no-store"
+[[headers]]
+  for = "/welcome.html"
+  [headers.values]
+    Cache-Control = "no-store"
+[[headers]]
+  for = "/config.js"
+  [headers.values]
+    Cache-Control = "no-store"

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>You're all set — Cerbral</title>
+  <meta name="theme-color" content="#0a0607">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ff6b35'/%3E%3Cstop offset='100%25' stop-color='%23ff3b5c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext y='.9em' font-size='90' fill='url(%23g)'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/auth.css">
+</head>
+<body class="auth-page auth-minimal">
+  <nav class="topbar">
+    <div class="container">
+      <a class="brand" href="/">
+        <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+          <defs>
+            <linearGradient id="brandGrad" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0%" stop-color="#ff6b35"/>
+              <stop offset="50%" stop-color="#ff4d88"/>
+              <stop offset="100%" stop-color="#ff3b5c"/>
+            </linearGradient>
+          </defs>
+          <circle cx="20" cy="20" r="14" fill="none" stroke="url(#brandGrad)" stroke-width="2.4"/>
+          <circle cx="20" cy="20" r="5.5" fill="url(#brandGrad)"/>
+        </svg>
+        <span>Cerbral</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="auth-center">
+    <div class="auth-card-centered auth-welcome">
+      <div class="progress">
+        <span class="step done">✓ Email</span>
+        <span class="sep"></span>
+        <span class="step done">✓ GitHub</span>
+        <span class="sep"></span>
+        <span class="step done" id="step-repo">Brain repo</span>
+        <span class="sep"></span>
+        <span class="step active">Open Cerbral</span>
+      </div>
+
+      <div id="status" class="welcome-status">Setting up your brain repo…</div>
+
+      <div id="success" hidden>
+        <h1>You're all set.</h1>
+        <p class="lede">
+          Your private <code id="repo-url">cerbral-brain</code> repo is ready.
+          Everything your AI learns about you will live here — you own it,
+          forever.
+        </p>
+        <div class="open-desktop">
+          <a id="open-desktop-btn" class="auth-btn auth-btn-primary auth-btn-lg" href="#">
+            Open Cerbral desktop app
+          </a>
+          <p class="auth-small">
+            Don't have the app yet?
+            <a href="/#install">Download Cerbral</a>
+            — your session will pick up where this left off.
+          </p>
+        </div>
+
+        <div class="quick-facts">
+          <h3>What just happened</h3>
+          <ul>
+            <li><strong>Email verified</strong> via Supabase magic link — no password needed.</li>
+            <li><strong>GitHub connected</strong> with the minimum scope to create your private brain repo.</li>
+            <li><strong>Brain repo created</strong> at <code id="repo-url-2"></code>. Cerbral Cloud will never read it.</li>
+            <li><strong>Desktop handoff</strong> — clicking the button above opens Cerbral.app and saves your session to the OS Keychain.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div id="error" class="welcome-error" hidden>
+        <h1>Something went wrong.</h1>
+        <p id="error-message" class="lede"></p>
+        <button class="auth-btn auth-btn-primary" id="retry-btn">Try again</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="/config.js" onerror="console.info('site/config.js not present yet.')"></script>
+  <script type="module">
+    import {
+      getSession, ensureBrainRepo, saveProfile, buildDesktopHandoff,
+    } from '/auth.js';
+
+    const statusEl  = document.getElementById('status');
+    const successEl = document.getElementById('success');
+    const errorEl   = document.getElementById('error');
+    const errMsgEl  = document.getElementById('error-message');
+
+    async function run() {
+      statusEl.textContent = 'Verifying your session…';
+      const session = await getSession();
+      if (!session) { window.location.replace('/signup'); return; }
+
+      statusEl.textContent = 'Creating your private brain repo…';
+      const { repo, created, user } = await ensureBrainRepo(session);
+      document.getElementById('repo-url').textContent   = repo.full_name;
+      document.getElementById('repo-url-2').textContent = repo.html_url;
+      document.getElementById('step-repo').textContent  =
+        created ? '✓ Brain repo' : '✓ Brain repo (existing)';
+
+      statusEl.textContent = 'Saving your profile…';
+      try {
+        await saveProfile({
+          githubHandle:  user.login,
+          brainRepoUrl:  repo.html_url,
+        });
+      } catch (err) {
+        // Profile write is non-fatal for the handoff; log and continue.
+        console.warn('profile upsert skipped:', err);
+      }
+
+      const handoff = buildDesktopHandoff(session, {
+        brainRepoUrl: repo.html_url,
+        githubHandle: user.login,
+      });
+      document.getElementById('open-desktop-btn').href = handoff;
+
+      statusEl.hidden = true;
+      successEl.hidden = false;
+    }
+
+    run().catch((err) => {
+      console.error(err);
+      statusEl.hidden = true;
+      errMsgEl.textContent = String(err?.message || err);
+      errorEl.hidden = false;
+    });
+
+    document.getElementById('retry-btn').addEventListener('click', () => {
+      errorEl.hidden = true;
+      statusEl.hidden = false;
+      statusEl.textContent = 'Retrying…';
+      run();
+    });
+  </script>
+</body>
+</html>

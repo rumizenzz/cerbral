@@ -21,3 +21,6 @@ Thumbs.db
 .env.*
 *.secrets
 .cerbral-secrets*
+
+# Supabase project-specific config (anon key + URL) — copied from config.sample.js
+site/config.js

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Connect GitHub — Cerbral</title>
+  <meta name="theme-color" content="#0a0607">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ff6b35'/%3E%3Cstop offset='100%25' stop-color='%23ff3b5c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext y='.9em' font-size='90' fill='url(%23g)'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/auth.css">
+</head>
+<body class="auth-page auth-minimal">
+  <nav class="topbar">
+    <div class="container">
+      <a class="brand" href="/">
+        <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+          <defs>
+            <linearGradient id="brandGrad" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0%" stop-color="#ff6b35"/>
+              <stop offset="50%" stop-color="#ff4d88"/>
+              <stop offset="100%" stop-color="#ff3b5c"/>
+            </linearGradient>
+          </defs>
+          <circle cx="20" cy="20" r="14" fill="none" stroke="url(#brandGrad)" stroke-width="2.4"/>
+          <circle cx="20" cy="20" r="5.5" fill="url(#brandGrad)"/>
+        </svg>
+        <span>Cerbral</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="auth-center">
+    <div class="auth-card-centered auth-onboard">
+      <div class="progress">
+        <span class="step done">✓ Email</span>
+        <span class="sep"></span>
+        <span class="step active">GitHub</span>
+        <span class="sep"></span>
+        <span class="step">Brain repo</span>
+        <span class="sep"></span>
+        <span class="step">Open Cerbral</span>
+      </div>
+      <h1>Now let's connect your GitHub.</h1>
+      <p class="lede">
+        Cerbral needs access to one <strong>private</strong> repo — the
+        place where your AI stores everything it learns about you. You own
+        the repo. Cerbral Cloud never reads from it.
+      </p>
+
+      <div class="gh-ask">
+        <div class="gh-ask-header">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+            <path fill="currentColor" d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.7 2.7 1.2 3.4.9.1-.7.4-1.2.7-1.5-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2 1-.3 2-.4 3-.4s2 .1 3 .4C17.3 5.1 18.3 5.4 18.3 5.4c.7 1.6.2 2.8.1 3.1.8.8 1.2 1.9 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/>
+          </svg>
+          <span>Cerbral will ask GitHub for…</span>
+        </div>
+        <ul class="gh-scopes">
+          <li><span class="tag">repo</span>Create &amp; write to your private <code>cerbral-brain</code> repo</li>
+          <li><span class="tag">user:email</span>Associate your brain repo with your account</li>
+        </ul>
+      </div>
+
+      <button id="gh-connect" class="auth-btn auth-btn-github auth-btn-lg" type="button">
+        Connect GitHub &amp; create my brain repo
+      </button>
+      <p class="auth-small">
+        Prefer to use an existing private repo? <a href="/docs/brain-repo">Read the brain-repo docs</a>.
+      </p>
+    </div>
+  </main>
+
+  <script src="/config.js" onerror="console.info('site/config.js not present yet.')"></script>
+  <script type="module">
+    import { supabase, connectGitHub, getSession } from '/auth.js';
+
+    // If user arrived here without a session, bounce to /signup.
+    (async () => {
+      const session = await getSession();
+      if (!session) window.location.replace('/signup');
+      // If the session already has a github provider token, skip straight to /welcome.
+      if (session?.provider_token && session?.user?.app_metadata?.provider === 'github') {
+        window.location.replace('/welcome');
+      }
+    })();
+
+    document.getElementById('gh-connect').addEventListener('click', async () => {
+      try { await connectGitHub(); }
+      catch (err) { alert('GitHub connect error: ' + (err?.message || err)); }
+    });
+  </script>
+</body>
+</html>

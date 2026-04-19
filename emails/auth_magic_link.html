@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sign in to Cerbral</title>
+<style>
+  body { margin: 0; padding: 0; background: #f4f1ed; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; color: #1d0d0e; }
+  .wrap { max-width: 520px; margin: 0 auto; padding: 48px 24px; }
+  .card { background: #ffffff; border: 1px solid #f0ddd3; border-radius: 16px; padding: 40px 32px; text-align: center; box-shadow: 0 20px 48px -24px rgba(255, 107, 53, 0.18); }
+  .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; margin-bottom: 8px; color: #1d0d0e; text-decoration: none; }
+  .brand-dot { width: 18px; height: 18px; border-radius: 999px; background: linear-gradient(135deg, #ff6b35 0%, #ff4d88 50%, #ff3b5c 100%); box-shadow: 0 0 14px rgba(255, 107, 53, 0.4); }
+  h1 { font-size: 26px; line-height: 1.2; margin: 16px 0 8px; font-weight: 600; }
+  p.sub { margin: 0 0 28px; font-size: 15px; color: #6b4a47; line-height: 1.55; }
+  .btn { display: inline-block; padding: 14px 28px; border-radius: 10px; background: linear-gradient(135deg, #ff6b35 0%, #ff4d88 50%, #ff3b5c 100%); color: #ffffff !important; font-weight: 600; text-decoration: none; font-size: 15px; box-shadow: 0 10px 24px -10px rgba(255, 77, 136, 0.5); }
+  .fine { margin-top: 32px; font-size: 12px; color: #a88780; line-height: 1.6; }
+  .fine a { color: #d94423; text-decoration: none; }
+  .url-fallback { word-break: break-all; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px; color: #6b4a47; margin-top: 12px; padding: 10px; background: #fff6f0; border-radius: 8px; border: 1px solid #f3d7c8; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <a class="brand" href="https://cerbral.com">
+        <span class="brand-dot"></span>
+        Cerbral
+      </a>
+      <h1>Sign in to Cerbral</h1>
+      <p class="sub">
+        Click the button below to finish signing in. The link opens your
+        Cerbral account in the same browser where you started.
+      </p>
+      <a class="btn" href="{{ .ConfirmationURL }}" target="_blank">Sign in to Cerbral</a>
+      <p class="fine">
+        Opening this email on a different device than where you signed up?
+        Click anyway — Cerbral will show you a one-time code to type back
+        on the original browser so everything finishes in one place.
+      </p>
+      <p class="fine">
+        Didn't request this? You can safely ignore this email. The link
+        expires in 1 hour and can only be used once.
+      </p>
+      <div class="url-fallback">{{ .ConfirmationURL }}</div>
+    </div>
+    <p class="fine" style="text-align: center; margin-top: 24px;">
+      Cerbral · <a href="https://cerbral.com">cerbral.com</a> ·
+      <a href="https://github.com/rumizenzz/cerbral">open source</a>
+    </p>
+  </div>
+</body>
+</html>

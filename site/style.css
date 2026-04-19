@@ -145,9 +145,17 @@ pre code { background: none; padding: 0; color: inherit; border: none; }
   font-weight: 500;
 }
 .navlinks a:hover { color: var(--fg); border-bottom: none; }
+.navlinks .nav-cta {
+  background: linear-gradient(135deg, #ff6b35 0%, #ff4d88 50%, #ff3b5c 100%);
+  color: #0a0607;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.navlinks .nav-cta:hover { color: #0a0607; filter: brightness(1.08); }
 @media (max-width: 620px) {
   .navlinks { gap: 1rem; font-size: 0.85rem; }
-  .navlinks a:not(:last-child) { display: none; }
+  .navlinks a:not(:last-child):not(.nav-cta) { display: none; }
 }
 
 /* ---------- HERO ---------- */
