@@ -11,6 +11,16 @@
   from = "/login"
   to   = "/signup.html"
   status = 200
+# Help Center + common shortcuts.
+[[redirects]]
+  from = "/support"
+  to   = "/support/index.html"
+  status = 200
+[[redirects]]
+  from = "/help"
+  to   = "/support/index.html"
+  status = 200
+
 # /check-email legacy → /signup so the card can transform in-place.
 [[redirects]]
   from = "/check-email"
