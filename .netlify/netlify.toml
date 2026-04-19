@@ -7,8 +7,15 @@ plugins = []
 [functions."*"]
 
 [build]
-publish = "/Users/rumizappalorti/cerbral-public/site"
+# Relative path so builds work on Netlify's CI (not just locally).
+publish = "site"
 publishOrigin = "config"
+# Generate site/config.js at build time from Netlify env vars.
+# See scripts/build-config.sh — reads SUPABASE_URL + SUPABASE_ANON_KEY
+# from the Netlify environment and writes a CERBRAL_CONFIG block the
+# static pages load on boot. config.js stays gitignored; the open-
+# source repo never carries real keys.
+command = "bash scripts/build-config.sh"
 
 [build.environment]
 
@@ -52,21 +59,6 @@ for = "/support/support.css"
 [headers.values]
 Cache-Control = "public, max-age=60, must-revalidate"
 
-# auth.js changes as the /signup + /onboard flow evolves (e.g. added
-# getProfile() for returning-user detection). Keep the cache window
-# short so fixes land in-browser without users having to hard-refresh.
-[[headers]]
-for = "/auth.js"
-
-[headers.values]
-Cache-Control = "public, max-age=60, must-revalidate"
-
-[[headers]]
-for = "/main.js"
-
-[headers.values]
-Cache-Control = "public, max-age=60, must-revalidate"
-
 [[headers]]
 for = "/signup.html"
 
@@ -102,42 +94,6 @@ for = "/config.js"
 
 [headers.values]
 Cache-Control = "no-store"
-
-[[headers]]
-for = "/sessions.html"
-
-[headers.values]
-Cache-Control = "no-store"
-
-[[headers]]
-for = "/session.html"
-
-[headers.values]
-Cache-Control = "no-store"
-
-[[redirects]]
-from = "/sessions"
-to = "/sessions.html"
-status = 200.0
-force = false
-
-[redirects.query]
-
-[redirects.conditions]
-
-[redirects.headers]
-
-[[redirects]]
-from = "/session"
-to = "/session.html"
-status = 200.0
-force = false
-
-[redirects.query]
-
-[redirects.conditions]
-
-[redirects.headers]
 
 [[redirects]]
 from = "/signup"
