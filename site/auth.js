@@ -191,6 +191,93 @@ export async function readBrainFile(session, path, repoName = 'cerbral-brain') {
 }
 
 /**
+ * Write a file in the user's cerbral-brain repo via the GitHub Contents
+ * API.  Used by Cerbral Code on the web to save new conversation
+ * turns to the brain — Cerbral Cloud never touches the content.
+ *
+ * Pass `sha` when updating an existing file (get it from
+ * listBrainDir or a prior readBrainFile-with-metadata call). Omit
+ * `sha` to create a new file; GitHub returns 422 if a file with
+ * the path already exists and no sha is supplied.
+ *
+ * Uses the Contents API (not the Data API) because session JSON
+ * typically comes in at a few hundred KB tops — well under the
+ * 1 MB single-commit limit. For larger blobs we'd need the git
+ * blob/tree/ref dance instead.
+ */
+export async function writeBrainFile(
+  session,
+  path,
+  content,
+  { message, sha, repoName = 'cerbral-brain' } = {}
+) {
+  const token = session?.provider_token;
+  if (!token) throw new Error('GitHub token missing');
+  const user = session.user?.user_metadata?.user_name
+    || session.user?.identities?.find((i) => i.provider === 'github')?.identity_data?.user_name;
+  if (!user) throw new Error('GitHub username missing');
+
+  // Base64-encode a UTF-8 payload. Going through TextEncoder means
+  // emoji and non-ASCII content round-trip cleanly (raw btoa() would
+  // throw on any character > U+00FF).
+  const bytes = new TextEncoder().encode(content);
+  let binaryString = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binaryString += String.fromCharCode(bytes[i]);
+  }
+  const base64 = btoa(binaryString);
+
+  const body = {
+    message: message || `cerbral-web: update ${path}`,
+    content: base64,
+  };
+  if (sha) body.sha = sha;
+
+  const url = `https://api.github.com/repos/${user}/${repoName}/contents/${encodeURI(path)}`;
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/vnd.github+json',
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    throw new Error(`GitHub ${res.status}: ${errText}`);
+  }
+  return await res.json();
+}
+
+/**
+ * Read a brain-repo file and return BOTH the decoded content AND the
+ * current SHA — callers that want to subsequently write back need the
+ * sha to avoid the "file already exists without sha" 422 error.
+ */
+export async function readBrainFileWithSha(session, path, repoName = 'cerbral-brain') {
+  const token = session?.provider_token;
+  if (!token) throw new Error('GitHub token missing');
+  const user = session.user?.user_metadata?.user_name
+    || session.user?.identities?.find((i) => i.provider === 'github')?.identity_data?.user_name;
+  if (!user) throw new Error('GitHub username missing');
+  const url = `https://api.github.com/repos/${user}/${repoName}/contents/${encodeURI(path)}`;
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
+  });
+  if (!res.ok) throw new Error(`GitHub ${res.status}: ${await res.text()}`);
+  const data = await res.json();
+  if (data.encoding !== 'base64') throw new Error(`Unexpected encoding ${data.encoding}`);
+  const bin = atob(data.content.replace(/\s/g, ''));
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return {
+    content: new TextDecoder('utf-8').decode(bytes),
+    sha: data.sha,
+  };
+}
+
+/**
  * Read the user's Cerbral profile row. Returns null if the row doesn't
  * exist yet (first-timer) OR if the profiles table isn't wired (which
  * is a non-fatal degradation — callers can fall through to the usual

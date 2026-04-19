@@ -27,6 +27,13 @@
     .web-row-when { font-size: 0.78rem; color: var(--fg-subtle, #999); font-variant-numeric: tabular-nums; white-space: nowrap; }
     .web-empty { padding: 3rem 1rem; text-align: center; color: var(--fg-muted, #666); }
     .web-err { padding: 1rem; background: rgba(255, 59, 92, 0.08); border: 1px solid rgba(255, 59, 92, 0.28); border-radius: 10px; color: #b8294f; font-size: 0.9rem; }
+    /* Primary entry point to /code — "start a new chat from the web"
+       is the most important action on this page, so make it land
+       above the list (not buried at the bottom). */
+    .web-new-row { margin: 0 0 1.4rem; }
+    .web-new-btn { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.7rem 1.15rem; background: #0a0607; color: #fff; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 0.92rem; transition: background 0.12s, transform 0.08s; }
+    .web-new-btn:hover { background: #1a0f10; transform: translateY(-1px); }
+    .web-new-btn .plus { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: color-mix(in srgb, #ff6b35 35%, transparent); font-size: 0.9rem; line-height: 1; }
     /* Disconnected-brain card — the single most important empty state.
        Without a GitHub connection, Cerbral Web literally can't load
        anything (by design: the user owns all data). Make the path to
@@ -109,6 +116,13 @@
         <button class="web-mode-tab active" role="tab" data-mode="chat">Chat</button>
         <button class="web-mode-tab" role="tab" data-mode="code">Code</button>
       </div>
+    </div>
+
+    <div class="web-new-row">
+      <a class="web-new-btn" href="/code">
+        <span class="plus" aria-hidden="true">+</span>
+        New chat with Cerbral
+      </a>
     </div>
 
     <div id="web-err" class="web-err" hidden></div>

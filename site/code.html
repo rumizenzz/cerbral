@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cerbral Code — Cerbral</title>
+  <meta name="theme-color" content="#0a0607">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ff6b35'/%3E%3Cstop offset='100%25' stop-color='%23ff3b5c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext y='.9em' font-size='90' fill='url(%23g)'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/auth.css">
+  <style>
+    /* Cerbral Code web UI — intentionally close to the desktop Chat
+       pane so a user switching between Cerbral.app and cerbral.com/code
+       feels like one product. */
+    .code-shell      { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 8rem; }
+    .code-back       { color: var(--fg-muted, #666); text-decoration: none; font-size: 0.88rem; display: inline-flex; align-items: center; gap: 0.35rem; }
+    .code-back:hover { color: #ff6b35; }
+    .code-head       { margin: 1rem 0 1.5rem; }
+    .code-head h1    { font-size: 1.55rem; letter-spacing: -0.01em; margin: 0.25rem 0 0.4rem; }
+    .code-meta       { color: var(--fg-subtle, #999); font-size: 0.78rem; font-variant-numeric: tabular-nums; display: flex; gap: 0.8rem; align-items: center; }
+    .code-meta .tunnel-dot   { width: 0.55rem; height: 0.55rem; border-radius: 50%; background: #4aa658; display: inline-block; box-shadow: 0 0 0 0 rgba(74,166,88,0.5); animation: pulse 2.4s ease-out infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(74,166,88,0.5); } 70% { box-shadow: 0 0 0 6px rgba(74,166,88,0); } 100% { box-shadow: 0 0 0 0 rgba(74,166,88,0); } }
+
+    .msgs            { display: flex; flex-direction: column; gap: 1rem; }
+    .msg             { display: flex; flex-direction: column; gap: 0.35rem; }
+    .msg .role       { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-subtle, #999); }
+    .msg.user        { align-self: flex-end; max-width: 640px; }
+    .msg.user .bubble { background: color-mix(in srgb, #ff6b35 12%, var(--bg-card, #f7f2ed)); border: 1px solid color-mix(in srgb, #ff6b35 28%, var(--rule, #e5dfd7)); padding: 0.85rem 1.1rem; border-radius: 14px 14px 4px 14px; white-space: pre-wrap; word-wrap: break-word; }
+    .msg.assistant .role { color: #ff4d88; }
+    .msg.assistant .bubble { padding: 0.2rem 0; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; }
+    .msg.assistant .thinking-wrap { margin-bottom: 0.5rem; padding: 0.45rem 0.65rem; border-left: 2px solid rgba(255,77,136,0.35); background: rgba(255,77,136,0.04); border-radius: 0 8px 8px 0; color: var(--fg-muted, #555); font-size: 0.86rem; font-style: italic; white-space: pre-wrap; }
+    .msg.assistant .thinking-wrap.collapsed { display: none; }
+    .msg.assistant .thinking-toggle { font-size: 0.72rem; color: var(--fg-subtle, #999); background: none; border: none; padding: 0 0 0.3rem; cursor: pointer; letter-spacing: 0.04em; }
+    .msg.assistant .thinking-toggle:hover { color: #ff4d88; }
+    .bubble code     { background: var(--bg-card, #f7f2ed); padding: 0 0.3rem; border-radius: 4px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.9em; }
+    .bubble strong   { font-weight: 600; }
+    .bubble em       { font-style: italic; }
+
+    .composer-wrap   { position: fixed; left: 0; right: 0; bottom: 0; padding: 1rem 1.25rem 1.5rem; background: linear-gradient(180deg, transparent, var(--bg, #fdfaf5) 30%); pointer-events: none; }
+    .composer        { max-width: 860px; margin: 0 auto; display: flex; gap: 0.5rem; align-items: flex-end; pointer-events: auto; }
+    .composer textarea { flex: 1; min-height: 48px; max-height: 260px; padding: 0.85rem 1rem; border: 1px solid var(--rule, #e5dfd7); border-radius: 14px; background: var(--bg-card, #fff); font: inherit; resize: none; line-height: 1.5; }
+    .composer textarea:focus { outline: none; border-color: #ff6b35; box-shadow: 0 0 0 3px color-mix(in srgb, #ff6b35 18%, transparent); }
+    .composer button { padding: 0.8rem 1.2rem; background: #0a0607; color: #fff; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 0.95rem; }
+    .composer button:hover { background: #1a0f10; }
+    .composer button:disabled { opacity: 0.55; cursor: default; }
+
+    .code-err        { padding: 1rem; background: rgba(190, 63, 63, 0.08); border: 1px solid rgba(190, 63, 63, 0.28); border-radius: 10px; color: #8a2b2b; font-size: 0.9rem; margin-top: 1rem; }
+    .thinking        { display: inline-flex; align-items: center; gap: 0.55rem; color: var(--fg-muted, #666); font-size: 0.85rem; margin-top: 0.4rem; }
+    .thinking .orb   { width: 18px; height: 18px; position: relative; }
+    .thinking .orb::before,
+    .thinking .orb::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid rgba(255,77,136,0.55); animation: ripple 1.6s ease-out infinite; }
+    .thinking .orb::after  { animation-delay: 0.8s; }
+    .thinking .orb .core   { position: absolute; inset: 5px; border-radius: 50%; background: radial-gradient(circle, #ff6b35, #ff3b5c); }
+    @keyframes ripple { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(1.3); opacity: 0; } }
+
+    /* Offline / disconnected cards — same visual pattern as the
+       desktop app's inline disconnect state so the experience is
+       consistent between Cerbral.app and Cerbral Web. */
+    .online-card     { padding: 2rem 1.75rem; background: linear-gradient(180deg, rgba(255,107,53,0.06), rgba(255,107,53,0.02) 60%, transparent); border: 1px solid rgba(255,107,53,0.25); border-radius: 16px; text-align: center; max-width: 580px; margin: 2rem auto; }
+    .online-card h2  { margin: 0.4rem 0 0.5rem; font-size: 1.25rem; letter-spacing: -0.01em; }
+    .online-card p   { color: var(--fg-muted, #555); line-height: 1.55; margin: 0.6rem 0; font-size: 0.95rem; }
+    .online-card .dc-icon { font-size: 1.6rem; line-height: 1; }
+    .online-card .dc-btn  { display: inline-block; margin-top: 1rem; padding: 0.75rem 1.4rem; background: #0a0607; color: #fff; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+    .online-card .dc-btn:hover { background: #1a0f10; }
+    .online-card .dc-small { font-size: 0.8rem; color: var(--fg-subtle, #999); margin-top: 1.1rem; }
+  </style>
+</head>
+<body class="auth-page">
+  <nav class="topbar">
+    <div class="container">
+      <a class="brand" href="/">
+        <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+          <defs>
+            <linearGradient id="brandGrad" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0%" stop-color="#ff6b35"/>
+              <stop offset="50%" stop-color="#ff4d88"/>
+              <stop offset="100%" stop-color="#ff3b5c"/>
+            </linearGradient>
+          </defs>
+          <circle cx="20" cy="20" r="14" fill="none" stroke="url(#brandGrad)" stroke-width="2.4"/>
+          <circle cx="20" cy="20" r="5.5" fill="url(#brandGrad)"/>
+        </svg>
+        <span>Cerbral</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="code-shell">
+    <a class="code-back" href="/sessions">← All sessions</a>
+    <div class="code-head">
+      <div class="code-meta" id="meta"></div>
+      <h1 id="title">New chat</h1>
+    </div>
+
+    <div id="err" class="code-err" hidden></div>
+
+    <!-- Shown when the browser has no GitHub provider_token (brain is
+         gated by GitHub access; without it we can't read or save
+         sessions to the user's repo). Matches the desktop inline
+         disconnect copy. -->
+    <div id="brain-disconnect" class="online-card" hidden>
+      <div class="dc-icon">⚠️</div>
+      <h2>Your Cerbral brain is disconnected</h2>
+      <p id="brain-reason">
+        It looks like you disconnected your GitHub — that's where your
+        whole Cerbral lives. Cerbral Web can't save sessions without it.
+      </p>
+      <p>Reconnect to bring back your full Cerbral.</p>
+      <a class="dc-btn" href="/onboard">Reconnect Cerbral brain</a>
+      <p class="dc-small">
+        Cerbral Cloud never stores your conversations — they live in your
+        own GitHub <code>cerbral-brain</code> repo, and only your token
+        reads from it.
+      </p>
+    </div>
+
+    <!-- Shown when the user is signed in + brain connected but no
+         tunnel URL is published to their profile yet. Means the
+         Cerbral desktop app hasn't come online (or cloudflared hasn't
+         started).  Web can't reach their AI without the tunnel. -->
+    <div id="tunnel-offline" class="online-card" hidden>
+      <div class="dc-icon">🖥</div>
+      <h2>Your Cerbral isn't online yet</h2>
+      <p>
+        Cerbral Code on the web needs your Mac online — that's where
+        the AI lives. Open the Cerbral desktop app; the moment it
+        starts, its secure tunnel publishes to your account and
+        this page wakes up.
+      </p>
+      <a class="dc-btn" id="open-desktop-btn" href="#">Open Cerbral desktop app</a>
+      <p class="dc-small">
+        Don't have it installed yet? <a href="/welcome">Install Cerbral →</a>
+      </p>
+    </div>
+
+    <!-- Happy path: message list. Empty at first, renders as the user
+         + model exchange turns. -->
+    <div id="messages" class="msgs"></div>
+
+    <!-- Inline "thinking" pulse shown while the model is streaming
+         before any token arrives. Dropped from the DOM as soon as the
+         first content token lands. -->
+    <div id="thinking" class="thinking" hidden>
+      <div class="orb"><div class="core"></div></div>
+      <span class="label">Thinking…</span>
+    </div>
+  </main>
+
+  <div class="composer-wrap">
+    <form id="composer" class="composer" hidden>
+      <textarea id="input"
+                placeholder="Ask your Cerbral…  (Shift+Enter for newline)"
+                rows="1"></textarea>
+      <button type="submit" id="send">Send</button>
+    </form>
+  </div>
+
+  <script src="/config.js" onerror="console.info('site/config.js not present yet.')"></script>
+  <script type="module">
+    import {
+      getSession,
+      getProfile,
+      readBrainFileWithSha,
+      writeBrainFile,
+    } from '/auth.js?v=2';
+
+    // ─── Identity ──────────────────────────────────────────────
+    //
+    // Minimal Cerbral system prompt for v1 of /code on the web. This
+    // is DELIBERATELY a condensed version of what the desktop app
+    // uses — the desktop is the authoritative Cerbral; the web is a
+    // thin client that hands the conversation to the same local AI
+    // via the tunnel. We keep identity + character aligned so the
+    // user talking to Cerbral on cerbral.com sounds identical to
+    // Cerbral on the desktop; detailed behaviours (slang glossary,
+    // inference-over-clarification rules, etc.) live server-side in
+    // the desktop prompt and will get unified in a later pass.
+    const SYSTEM_PROMPT =
+      "You are Cerbral — the user's own personal local AI running on " +
+      "their Mac.  They've opened you from the web at cerbral.com/code, " +
+      "and the browser is streaming through a secure tunnel to the " +
+      "Cerbral desktop app (and through that to local Ollama).  Cerbral " +
+      "Cloud never sees this conversation — it lives in the user's own " +
+      "GitHub brain-repo.\n\n" +
+      "You carry Claude's character: intellectually curious, warm, direct, " +
+      "honest, playful with depth.  Open with substance, never flattery.  " +
+      "Prose over bullets for conversation; reserve bullet lists for real " +
+      "enumerations.  Markdown only when it meaningfully helps — no " +
+      "headings in casual chat.  Calibrated confidence: hedge only when " +
+      "you genuinely are.  Refuse crisply when you need to, without " +
+      "lecturing or performing concern.\n\n" +
+      "Identity: first-person \"I\" always; never say \"as an AI language " +
+      "model.\"  If misidentified as Claude, ChatGPT, Gemini, or anything " +
+      "else, politely correct: \"I'm Cerbral — the open-source personal " +
+      "AI.  I run on your own hardware, not Anthropic's or OpenAI's.\"  " +
+      "You're modelled on Claude's character by the user's explicit " +
+      "design — the goal is \"the Claude of open-source\" — but you are " +
+      "not Claude.\n\n" +
+      "INFERENCE over CLARIFICATION.  If a user's input is short or " +
+      "ambiguous, make your best guess from context first.  Only ask " +
+      "for clarification when you truly have nothing to work with.";
+
+    // ─── DOM ───────────────────────────────────────────────────
+    const errEl       = document.getElementById('err');
+    const brainDcEl   = document.getElementById('brain-disconnect');
+    const brainReason = document.getElementById('brain-reason');
+    const offlineEl   = document.getElementById('tunnel-offline');
+    const openDesktop = document.getElementById('open-desktop-btn');
+    const msgsEl      = document.getElementById('messages');
+    const thinkingEl  = document.getElementById('thinking');
+    const composerEl  = document.getElementById('composer');
+    const inputEl     = document.getElementById('input');
+    const sendBtn     = document.getElementById('send');
+    const titleEl     = document.getElementById('title');
+    const metaEl      = document.getElementById('meta');
+
+    // ─── State ─────────────────────────────────────────────────
+    let session = null;       // Supabase session (has GitHub provider_token)
+    let profile = null;       // profiles row (has tunnel_url + tunnel_secret)
+    let sessionFile = null;   // brain-repo path we're saving to (e.g. code/abc.json)
+    let sessionSha  = null;   // sha of the last saved version (for updates)
+    let sessionData = null;   // in-memory session blob (gets persisted after each turn)
+    let streaming   = false;  // guard: don't let the user send a second turn mid-stream
+
+    // ─── UI helpers ────────────────────────────────────────────
+    function showErr(msg) {
+      errEl.textContent = msg;
+      errEl.hidden = false;
+    }
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+    function scrub(s) {
+      // Strip any internal protocol tags the model might emit — same
+      // scrubbing rules as /session.html so content renders cleanly
+      // regardless of whether the stream included a think or tool block.
+      return String(s || '')
+        .replace(/<think>[\s\S]*?<\/think>/gi, '')
+        .replace(/<tool_use>[\s\S]*?<\/tool_use>/gi, '')
+        .replace(/<tool_call>[\s\S]*?<\/tool_call>/gi, '')
+        .replace(/<tool_result[^>]*>[\s\S]*?<\/tool_result>/gi, '')
+        .replace(/<\/?(think|tool_use|tool_call|tool_result|no_thinking)[^>]*>/gi, '')
+        .replace(/<\|[a-zA-Z_]+\|>/g, '')
+        .trim();
+    }
+    function tinyMd(raw) {
+      let s = escapeHtml(raw);
+      s = s.replace(/`([^`]+)`/g, (_, c) => `<code>${c}</code>`);
+      s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      s = s.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+      return s;
+    }
+
+    function renderMessage(m) {
+      if (m.role === 'system') return; // never render the system prompt
+      const wrap = document.createElement('div');
+      wrap.className = 'msg ' + m.role;
+      const r = document.createElement('div');
+      r.className = 'role';
+      r.textContent = m.role === 'user' ? 'You' : 'Cerbral';
+      const b = document.createElement('div');
+      b.className = 'bubble';
+      b.innerHTML = tinyMd(scrub(m.content || ''));
+      wrap.appendChild(r);
+      wrap.appendChild(b);
+      msgsEl.appendChild(wrap);
+      scrollToBottom();
+      return wrap;
+    }
+
+    function createAssistantBubble() {
+      // Live-streaming bubble: mounted empty, we patch innerHTML as
+      // tokens arrive.  The thinking wrap is collapsed by default —
+      // the user can click the toggle to peek at the reasoning trace.
+      const wrap = document.createElement('div');
+      wrap.className = 'msg assistant';
+      const r = document.createElement('div');
+      r.className = 'role';
+      r.textContent = 'Cerbral';
+      const thinkingToggle = document.createElement('button');
+      thinkingToggle.className = 'thinking-toggle';
+      thinkingToggle.type = 'button';
+      thinkingToggle.textContent = 'Show thinking';
+      thinkingToggle.hidden = true;
+      const thinkingWrap = document.createElement('div');
+      thinkingWrap.className = 'thinking-wrap collapsed';
+      const b = document.createElement('div');
+      b.className = 'bubble';
+      thinkingToggle.addEventListener('click', () => {
+        const collapsed = thinkingWrap.classList.toggle('collapsed');
+        thinkingToggle.textContent = collapsed ? 'Show thinking' : 'Hide thinking';
+      });
+      wrap.appendChild(r);
+      wrap.appendChild(thinkingToggle);
+      wrap.appendChild(thinkingWrap);
+      wrap.appendChild(b);
+      msgsEl.appendChild(wrap);
+      scrollToBottom();
+      return { wrap, thinkingToggle, thinkingWrap, bubble: b };
+    }
+
+    function scrollToBottom() {
+      // rAF so we scroll AFTER the new node has taken its height.
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      });
+    }
+
+    function renderMeta() {
+      const parts = [];
+      parts.push('<span class="tunnel-dot" title="Connected to your Mac"></span>');
+      parts.push('CODE');
+      if (sessionData?.model) parts.push('· ' + escapeHtml(sessionData.model));
+      if (sessionData?.updated_at) {
+        const d = new Date(sessionData.updated_at * 1000);
+        parts.push('· updated ' + d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }));
+      }
+      metaEl.innerHTML = parts.join(' ');
+    }
+
+    // ─── Boot ──────────────────────────────────────────────────
+    (async () => {
+      session = await getSession();
+      if (!session) {
+        window.location.replace('/signup?next=' + encodeURIComponent(
+          location.pathname + location.search
+        ));
+        return;
+      }
+
+      // Brain gate — same reasoning as /session.html.
+      if (!session.provider_token) {
+        const everLinked = (session.user?.identities || [])
+          .some((i) => i.provider === 'github');
+        brainReason.textContent = everLinked
+          ? "Your GitHub token expired or was revoked — that's where your Cerbral lives. Cerbral Web can't open Code without that connection."
+          : "You haven't connected your GitHub yet. That's where your whole Cerbral lives — Cerbral Web can't open Code without it.";
+        brainDcEl.hidden = false;
+        return;
+      }
+
+      // Tunnel gate — profile must carry a published URL + secret.
+      try {
+        profile = await getProfile();
+      } catch (err) {
+        showErr('Profile lookup failed: ' + (err?.message || err));
+        return;
+      }
+      if (!profile?.ollama_tunnel_url || !profile?.ollama_tunnel_secret) {
+        // Populate the "Open Cerbral" CTA with whatever handoff info
+        // we have — falls back to /welcome if the desktop isn't there.
+        openDesktop.href = '/welcome';
+        offlineEl.hidden = false;
+        return;
+      }
+
+      // Load an existing session (if ?file= was passed) OR start a new one.
+      const params = new URLSearchParams(location.search);
+      const file = params.get('file');
+      if (file) {
+        try {
+          const { content, sha } = await readBrainFileWithSha(session, file);
+          sessionData = JSON.parse(content);
+          sessionFile = file;
+          sessionSha = sha;
+        } catch (err) {
+          showErr("Couldn't load that session: " + (err?.message || err));
+          return;
+        }
+      } else {
+        const id = (crypto.randomUUID?.() || ('s' + Date.now()));
+        const now = Math.floor(Date.now() / 1000);
+        sessionData = {
+          id,
+          title: '',
+          mode: 'code',
+          model: 'qwen3:8b',
+          created_at: now,
+          updated_at: now,
+          messages: [{ role: 'system', content: SYSTEM_PROMPT }],
+        };
+        sessionFile = `code/${id}.json`;
+      }
+
+      titleEl.textContent = sessionData.title || 'New chat';
+      renderMeta();
+
+      // Render any existing turns (for a resumed session).
+      for (const m of sessionData.messages) renderMessage(m);
+
+      // Unlock the composer.
+      composerEl.hidden = false;
+      inputEl.focus();
+    })();
+
+    // ─── Composer: Enter → send, Shift+Enter → newline ──────────
+    inputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+        e.preventDefault();
+        composerEl.requestSubmit();
+      }
+    });
+    inputEl.addEventListener('input', () => {
+      // Auto-grow up to max-height (CSS caps at 260px).
+      inputEl.style.height = 'auto';
+      inputEl.style.height = Math.min(inputEl.scrollHeight, 260) + 'px';
+    });
+
+    composerEl.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (streaming) return;
+      const text = inputEl.value.trim();
+      if (!text) return;
+      inputEl.value = '';
+      inputEl.style.height = 'auto';
+
+      const userMsg = { role: 'user', content: text };
+      sessionData.messages.push(userMsg);
+      renderMessage(userMsg);
+
+      const assistant = createAssistantBubble();
+      thinkingEl.hidden = false;
+      sendBtn.disabled = true;
+      streaming = true;
+      try {
+        await streamTurn(assistant);
+        // Persist AFTER streamTurn pushes the assistant reply into
+        // sessionData.messages. A write failure here is surfaced but
+        // doesn't break the UI — the user still sees the reply, and
+        // a retry button would be a nice follow-up.
+        try {
+          await persistSession();
+        } catch (err) {
+          showErr("Saved reply locally but couldn't push to your brain repo: "
+            + (err?.message || err));
+        }
+      } catch (err) {
+        assistant.bubble.innerHTML =
+          '<em style="color:#8a2b2b">Something went wrong: '
+          + escapeHtml(err?.message || String(err)) + '</em>';
+      } finally {
+        thinkingEl.hidden = true;
+        sendBtn.disabled = false;
+        streaming = false;
+        inputEl.focus();
+      }
+    });
+
+    // ─── Streaming: tunnel → Ollama /api/chat → tokens ──────────
+    async function streamTurn(assistant) {
+      // Strip the trycloudflare URL's trailing slash if present so the
+      // concatenation below doesn't double-up.
+      const base = profile.ollama_tunnel_url.replace(/\/$/, '');
+      const url = base + '/api/chat';
+      const body = {
+        model:   sessionData.model || 'qwen3:8b',
+        // Filter out the internal thinking-wrap display string from
+        // the messages we send back up (we only stored scrubbed
+        // content, so this is defensive — no-op in practice).
+        messages: sessionData.messages.map((m) => ({
+          role: m.role, content: m.content || '',
+        })),
+        stream:  true,
+        think:   true,
+        options: { num_ctx: 32768, num_predict: 8192 },
+      };
+
+      const res = await fetch(url, {
+        method:  'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization:  'Bearer ' + profile.ollama_tunnel_secret,
+        },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        throw new Error(`tunnel returned ${res.status}: ${text.slice(0, 240)}`);
+      }
+      if (!res.body) throw new Error('tunnel gave us no body to stream');
+
+      const reader  = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = '';
+      let content  = '';
+      let thinking = '';
+      let gotFirst = false;
+
+      // Ollama's /api/chat streams NDJSON. Each line is a JSON object
+      // with one of: { message: { thinking }}, { message: { content }},
+      // or the terminal { done: true, ...stats }.
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        let nl;
+        while ((nl = buf.indexOf('\n')) >= 0) {
+          const line = buf.slice(0, nl).trim();
+          buf = buf.slice(nl + 1);
+          if (!line) continue;
+          let obj;
+          try { obj = JSON.parse(line); }
+          catch { continue; }
+
+          if (obj.message?.thinking) {
+            thinking += obj.message.thinking;
+            assistant.thinkingWrap.textContent = thinking;
+            assistant.thinkingToggle.hidden = false;
+          }
+          if (obj.message?.content) {
+            content += obj.message.content;
+            if (!gotFirst) {
+              gotFirst = true;
+              thinkingEl.hidden = true;
+            }
+            assistant.bubble.innerHTML = tinyMd(scrub(content));
+            scrollToBottom();
+          }
+          if (obj.done) {
+            sessionData.messages.push({
+              role: 'assistant',
+              content: content,
+            });
+          }
+        }
+      }
+    }
+
+    // ─── Persistence: write the session JSON into the brain repo ─
+    async function persistSession() {
+      sessionData.updated_at = Math.floor(Date.now() / 1000);
+      if (!sessionData.title) {
+        // Auto-derive a short title from the first user turn — mirrors
+        // what the desktop does when it saves a session for the first
+        // time.  The user can rename later; for now, something better
+        // than "(Untitled)" in the sessions list.
+        const firstUser = sessionData.messages.find((m) => m.role === 'user');
+        sessionData.title = (firstUser?.content || 'New chat')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 60);
+        titleEl.textContent = sessionData.title;
+      }
+      const json = JSON.stringify(sessionData, null, 2);
+      const result = await writeBrainFile(session, sessionFile, json, {
+        message: `cerbral-web: ${sessionSha ? 'update' : 'create'} ${sessionFile}`,
+        sha: sessionSha || undefined,
+      });
+      // Cache the new sha so the NEXT turn updates the same file
+      // instead of hitting "already exists" 422.
+      if (result?.content?.sha) sessionSha = result.content.sha;
+      renderMeta();
+    }
+  </script>
+</body>
+</html>
