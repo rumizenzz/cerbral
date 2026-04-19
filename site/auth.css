@@ -441,10 +441,134 @@
   font-size: 0.92em;
 }
 
-/* Galactuz API block — second revenue stream below the subscription
-   tiers. Laid out as 3 horizontal rate cards on wide, stacks on
-   mobile. Intentionally lower visual weight than the tier grid so
-   subscriptions remain the primary conversion. */
+/* Teams & Enterprise — sits between the individual-tier grid and the
+   Galactuz API block. Two cards side-by-side; second one (Enterprise)
+   uses the brand gradient on the CTA to differentiate from the self-
+   serve Teams CTA. */
+.teams-section {
+  max-width: 1150px;
+  margin: 3.5rem auto 0;
+  padding: 0 1rem;
+}
+.teams-heading {
+  text-align: center;
+  font-size: 1.7rem;
+  letter-spacing: -0.015em;
+  margin: 0 0 0.4rem;
+}
+.teams-sub {
+  text-align: center;
+  color: var(--fg-muted, #555);
+  font-size: 0.98rem;
+  line-height: 1.5;
+  margin: 0 auto 1.6rem;
+  max-width: 620px;
+}
+.teams-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.1rem;
+}
+@media (max-width: 1180px) { .teams-grid { grid-template-columns: 1fr; max-width: 540px; margin: 0 auto; } }
+.team-card {
+  background: #fff;
+  border: 1px solid var(--rule, #e5dfd7);
+  border-radius: 18px;
+  padding: 1.8rem 1.7rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.team-card.team-featured {
+  border-color: var(--accent, #ff6b35);
+  box-shadow: 0 12px 36px -14px rgba(255, 107, 53, 0.22);
+}
+.team-card.team-enterprise {
+  border-color: var(--fg, #1d0d0e);
+  background: linear-gradient(180deg, rgba(29,13,14,0.025) 0%, #fff 60%);
+}
+.team-ribbon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--brand-gradient, linear-gradient(135deg, #ff6b35 0%, #ff4d88 50%, #ff3b5c 100%));
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.team-name {
+  margin: 0 0 0.3rem;
+  font-size: 1.18rem;
+  letter-spacing: -0.01em;
+}
+.team-sub {
+  color: var(--fg-muted, #555);
+  margin: 0 0 1rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.team-price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin: 0 0 0.3rem;
+}
+.team-dollar { font-size: 2.3rem; font-weight: 700; letter-spacing: -0.015em; }
+.team-unit   { font-size: 0.95rem; color: var(--fg-muted, #666); }
+.team-note   { font-size: 0.82rem; color: var(--fg-subtle, #98928a); margin: 0 0 1rem; }
+.team-btn {
+  display: inline-block;
+  padding: 0.7rem 1.1rem;
+  background: transparent;
+  color: var(--fg, #1d0d0e);
+  border: 1px solid var(--rule-strong, #d9d2c8);
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  text-decoration: none;
+  text-align: center;
+  transition: background 0.12s, border-color 0.12s;
+  margin-bottom: 0.6rem;
+  align-self: flex-start;
+}
+.team-btn:hover { background: var(--bg-card, #f7f2ed); border-color: var(--accent, #ff6b35); }
+.team-btn-primary {
+  background: var(--fg, #1d0d0e);
+  color: #fff;
+  border-color: var(--fg, #1d0d0e);
+}
+.team-btn-primary:hover { background: #2a1f17; border-color: #2a1f17; }
+.team-commit {
+  font-size: 0.82rem;
+  color: var(--fg-subtle, #98928a);
+  margin: 0 0 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.team-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.team-features li {
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--rule, #e5dfd7);
+  color: var(--fg, #1d0d0e);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.team-features li:first-child { border-top: 0; padding-top: 0; }
+.team-features li strong { color: var(--fg, #1d0d0e); }
+
+/* Galactuz API block — third revenue stream below Teams / Enterprise.
+   Laid out as 3 horizontal rate cards on wide, stacks on mobile.
+   Intentionally lower visual weight so subscriptions remain the
+   primary conversion on the public page; the real home is
+   platform.galactuz.com. */
 .api-block {
   max-width: 1150px;
   margin: 3rem auto 0;

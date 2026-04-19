@@ -220,9 +220,9 @@
           <p class="plan-commit">No surprise bills · hard caps, not metered overage</p>
           <p class="plan-features-title">Everything in Free, plus:</p>
           <ul class="plan-features">
-            <li><strong>~5M tokens/mo</strong> of cloud inference on Cerbral's default model (Qwen3-class)</li>
-            <li><strong>$5 Boost credit pool</strong> for routing to frontier models (Claude Sonnet, GPT) on demand</li>
-            <li><strong>10 GB Cerbral Cloud storage</strong> for embeddings, attachments, scratch — brain-repo stays primary</li>
+            <li><strong>~5M tokens of cloud inference</strong> a month <span class="plan-human">— roughly 400 sessions, or 40 hours of Cerbral Code</span></li>
+            <li><strong>$5 Boost credit</strong> for frontier models (Claude Sonnet, GPT) on demand</li>
+            <li><strong>10 GB Cerbral Cloud storage</strong> — brain-repo stays primary</li>
             <li>Cerbral Web + mobile work even when your Mac is off</li>
             <li>Scheduled + background agents hosted on Cerbral Cloud</li>
             <li>Sync across devices · priority queue</li>
@@ -245,7 +245,7 @@
           <p class="plan-commit">No surprise bills · hard caps · cancel anytime</p>
           <p class="plan-features-title">Everything in Pro, plus:</p>
           <ul class="plan-features">
-            <li><strong>~30M tokens/mo</strong> (6× Pro) on default model</li>
+            <li><strong>~30M tokens a month</strong> (6× Pro) <span class="plan-human">— roughly 2,400 sessions, or a full-time coding week every week</span></li>
             <li><strong>$25 Boost credit</strong> for frontier models — Claude Opus, GPT-Pro class</li>
             <li><strong>100 GB Cerbral Cloud storage</strong></li>
             <li>Multi-hour background agents · longer run budget</li>
@@ -269,7 +269,7 @@
           <p class="plan-commit">No surprise bills · hard caps · cancel anytime</p>
           <p class="plan-features-title">Everything in Max, plus:</p>
           <ul class="plan-features">
-            <li><strong>~60M tokens/mo</strong> (12× Pro, 2× Max) on default model</li>
+            <li><strong>~60M tokens a month</strong> (12× Pro, 2× Max) <span class="plan-human">— roughly 4,800 sessions, or 8-10 hours a day of heavy Cerbral Code</span></li>
             <li><strong>$50 Boost credit</strong> for frontier models · Opus + GPT-Pro unrestricted</li>
             <li><strong>500 GB Cerbral Cloud storage</strong></li>
             <li>Dedicated inference slot · shortest queue at peak</li>
@@ -281,64 +281,162 @@
       </div>
 
       <p class="plans-footnote">
-        <strong>Why these numbers hold up.</strong> Cerbral Cloud routes
+        <strong>No surprise bills, ever.</strong> Every tier has a hard
+        monthly cap by default — if you hit it, Cerbral Cloud stops
+        charging compute until next month, full stop. Metered overage
+        is strictly opt-in and capped at whatever monthly ceiling you
+        set. In the app you'll see a progress bar and a plain-English
+        estimate ("about 180 more sessions this month at your current
+        pace") — not a token counter. You should never have to do mental
+        math about tokens to use Cerbral.
+      </p>
+      <p class="plans-footnote">
+        <strong>Why the numbers hold up.</strong> Cerbral Cloud routes
         by default to open-weights models (Qwen3-class) hosted on
         Galactuz-managed GPUs, where token cost lands around $0.90 per
         million blended — so $20 Pro's 5M token budget costs us ~$4.50,
         leaving room for payment processing and margin. The Boost credit
         pool is what lets users reach Claude Sonnet or GPT-Pro on
         demand; those calls debit the pool at provider cost, so heavy
-        frontier use doesn't torch the margin on the base sub.  Storage
+        frontier use doesn't torch the margin on the base sub. Storage
         is the cheap part: at Cloudflare R2 rates ($0.015/GB/mo), the
-        10 GB / 100 GB / 500 GB quotas cost us $0.15, $1.50, and $7.50
-        per user per month — negligible next to compute.  Hard monthly
-        caps across every tier — never a surprise overage bill — with
-        opt-in metered overage at the tier-specific rate if you choose
-        to keep going. Same framing Ollama uses for Turbo, with a
-        Cursor-style pay-as-you-go on top. Whatever you pay for, your
+        10 / 100 / 500 GB quotas cost us $0.15, $1.50, and $7.50 per
+        user per month — negligible next to compute. Same framing Ollama
+        uses for Turbo, with a Cursor-style pay-as-you-go on top. Your
         conversations and memories stay in <em>your</em> GitHub
         brain-repo; Galactuz never sees the contents.
       </p>
 
-      <!-- Galactuz API — second revenue stream alongside Cerbral Cloud
-           subscriptions. For developers / integrators who want pure
-           usage-based inference without a consumer sub; same routing
-           stack as Cerbral Cloud, published per-token rates, $10
-           minimum topup, never charged more than you deposit. -->
+      <!-- Teams & Enterprise — mirrors Anthropic's structure: TWO seat
+           tiers within Teams (Standard + Premium), per-seat usage
+           limits (NEVER pooled — research flagged this explicitly;
+           pooling one power user destroys team margins), Enterprise
+           is sales-gated with SSO/SCIM/audit. Pricing undercuts Claude
+           Teams by ~25% while keeping healthy margin on Qwen3-class
+           default routing. -->
+      <section class="teams-section" id="teams">
+        <h2 class="teams-heading">For teams and companies</h2>
+        <p class="teams-sub">
+          Same Cerbral product, shaped for multiple seats. Each
+          member's brain repo stays private to them; the admin
+          console, SSO, and one bill are what teams actually need from
+          a cloud AI — not a shared token pool one person can drain.
+        </p>
+        <div class="teams-grid">
+          <article class="team-card">
+            <h3 class="team-name">Teams · Standard</h3>
+            <p class="team-sub">Self-serve, for teams that want SSO + one bill.</p>
+            <div class="team-price">
+              <span class="team-dollar">$15</span>
+              <span class="team-unit">/seat · month · annual</span>
+            </div>
+            <p class="team-note">$18/seat billed monthly · min 3 seats</p>
+            <a class="team-btn" href="mailto:teams@galactuz.com?subject=Cerbral%20Cloud%20Teams%20Standard">Start a team</a>
+            <p class="team-commit">Pro, for every seat</p>
+            <ul class="team-features">
+              <li><strong>Per-seat token budget</strong> — ~7M tokens/mo per seat (slightly above solo Pro)</li>
+              <li><strong>$5 Boost credit per seat</strong> for frontier models — not pooled, not transferable</li>
+              <li><strong>15 GB Cerbral Cloud storage per seat</strong></li>
+              <li><strong>Shared Spaces</strong> for projects the team works on together</li>
+              <li><strong>Admin console</strong> — invite/remove, usage per member, per-seat caps</li>
+              <li><strong>SSO</strong> — Google Workspace, Microsoft Entra, domain capture</li>
+              <li>One consolidated bill · JIT provisioning · RBAC</li>
+            </ul>
+          </article>
+
+          <article class="team-card team-featured">
+            <div class="team-ribbon">Includes Cerbral Code</div>
+            <h3 class="team-name">Teams · Premium</h3>
+            <p class="team-sub">Heavy Cerbral Code usage per seat; unlocks long-running agents.</p>
+            <div class="team-price">
+              <span class="team-dollar">$60</span>
+              <span class="team-unit">/seat · month · annual</span>
+            </div>
+            <p class="team-note">$72/seat billed monthly · min 3 seats</p>
+            <a class="team-btn team-btn-primary" href="mailto:teams@galactuz.com?subject=Cerbral%20Cloud%20Teams%20Premium">Start a team</a>
+            <p class="team-commit">Max, for every seat</p>
+            <ul class="team-features">
+              <li><strong>Per-seat token budget</strong> — ~35M tokens/mo per seat (slightly above solo Max)</li>
+              <li><strong>$25 Boost credit per seat</strong> for Opus + GPT-Pro class — per-seat, not pooled</li>
+              <li><strong>120 GB Cerbral Cloud storage per seat</strong></li>
+              <li><strong>Cerbral Code agentic mode unlocked</strong> on every seat</li>
+              <li>Multi-hour background agents · priority queue</li>
+              <li>Everything in Standard — admin, SSO, SCIM, RBAC</li>
+              <li class="plan-overage">Opt-in overage per seat: <strong>$2 per 1M tokens</strong></li>
+            </ul>
+          </article>
+
+          <article class="team-card team-enterprise">
+            <h3 class="team-name">Enterprise</h3>
+            <p class="team-sub">For companies that need a contract, audit trail, and BAA.</p>
+            <div class="team-price">
+              <span class="team-dollar">From $40</span>
+              <span class="team-unit">/seat · month</span>
+            </div>
+            <p class="team-note">Min 25 seats · 12-month term · seat fee + metered usage</p>
+            <a class="team-btn team-btn-primary" href="mailto:enterprise@galactuz.com?subject=Cerbral%20Cloud%20Enterprise">Contact sales</a>
+            <p class="team-commit">Everything in Teams Premium, plus enterprise controls</p>
+            <ul class="team-features">
+              <li><strong>SCIM provisioning</strong> + deep SSO (Okta, Entra, custom IdPs)</li>
+              <li><strong>Audit logs + Compliance API</strong> — programmatic access to every admin action, key event, usage record</li>
+              <li><strong>Dedicated inference capacity</strong> — your own Galactuz GPU slice, no shared queue</li>
+              <li><strong>HIPAA-ready BAA</strong> — sales-gated, not self-serve (on purpose)</li>
+              <li><strong>Custom data retention</strong> + training opt-out by default</li>
+              <li><strong>Data residency</strong> — US, EU, on-prem GPU hosting (1.1× for custom region)</li>
+              <li><strong>99.9% inference SLA</strong> with credits-back</li>
+              <li>Expanded context window · custom rate limits · named account team</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <!-- Galactuz API — third revenue stream alongside Cerbral Cloud
+           subscriptions and Teams/Enterprise. Developer-grade metered
+           inference; same routing stack as Cerbral Cloud, published
+           per-token rates, prompt caching, batch discount, usage-tier
+           spend ladder. Lives at platform.galactuz.com (mirrors
+           Anthropic's platform.claude.com). Rates and discount
+           mechanics match researched industry norms — caching 1.25x
+           write / 0.1x read (90% off), batch 50% off, stackable. -->
       <div class="api-block" id="api">
         <div class="api-block-head">
-          <h3 class="api-heading">Or skip the sub — Galactuz API.</h3>
+          <h3 class="api-heading">Build on the Galactuz API</h3>
           <p class="api-sub">
-            Pure usage-based inference for developers and integrators.
-            Same routing stack Cerbral Cloud subscriptions use, same
-            open-weights default model, published per-token rates.
-            No seat math, no monthly minimum — $10 minimum topup,
-            prepaid so you're never billed more than you put in.
+            Pure usage-based inference for developers — the same routing
+            stack Cerbral Cloud subscriptions use, with published
+            per-token rates. Prompt caching, batch discounts, and
+            usage tiers that unlock higher spend caps as you grow.
+            $5 in starter credits for new orgs. Lives at
+            <a href="https://platform.galactuz.com">platform.galactuz.com</a>.
           </p>
         </div>
         <div class="api-rates">
           <div class="api-rate">
             <div class="api-rate-name">Default model (Qwen3-class)</div>
-            <div class="api-rate-price">$3<span class="unit"> / 1M tokens</span></div>
-            <div class="api-rate-note">Blended input + output · same quality as Cerbral Cloud's default routing.</div>
+            <div class="api-rate-price">$0.50<span class="unit"> / $2.50</span></div>
+            <div class="api-rate-note">Per 1M input / output tokens · ~5× cheaper than Claude Sonnet. Same quality as Cerbral Cloud's default routing.</div>
           </div>
           <div class="api-rate">
             <div class="api-rate-name">Frontier (Claude, GPT)</div>
-            <div class="api-rate-price">Pass-through<span class="unit"> + 10%</span></div>
-            <div class="api-rate-note">Anthropic and OpenAI published rates plus a thin routing fee. Opus + GPT-Pro available.</div>
+            <div class="api-rate-price">Pass-through<span class="unit"> + 15%</span></div>
+            <div class="api-rate-note">Anthropic + OpenAI published rates plus a thin routing spread. Opus, GPT-Pro, image+file inputs, web search all available.</div>
           </div>
           <div class="api-rate">
-            <div class="api-rate-name">Storage (attachments, embeddings)</div>
-            <div class="api-rate-price">$0.02<span class="unit"> / GB-month</span></div>
-            <div class="api-rate-note">Cloudflare R2 rates plus a small markup. Egress is free — you pull your data whenever you want.</div>
+            <div class="api-rate-name">Bonuses that stack</div>
+            <div class="api-rate-price" style="font-size: 1.15rem;">90% off cached reads</div>
+            <div class="api-rate-note">Prompt caching (1.25× write, 0.1× read). Batch API: 50% off, stacks with caching. Result: long-context repeat work can land at ~5% of the standard rate.</div>
           </div>
         </div>
         <p class="api-foot">
-          Launches alongside Cerbral Cloud subscriptions. A subscription
-          buys you bundled tokens at a better effective rate plus the
-          consumer product (Cerbral Web, background agents, sync); the
-          API is the right choice if you just want inference metered
-          honestly.
+          Org → Workspace → API key hierarchy: set spend caps at the
+          org or workspace level, scope individual keys to just what
+          they need. Usage tiers advance automatically as you spend —
+          Tier 1 ($100/mo cap) after your first $5; Tier 4 ($5K/mo)
+          past $5K deposited. Enterprise unlocks custom rate limits.
+          Storage for attachments / embeddings: $0.02 / GB-month, free
+          egress. A consumer subscription still gets you better effective
+          per-token pricing plus the app; the API is right if you just
+          want inference metered honestly.
         </p>
       </div>
     </div>
