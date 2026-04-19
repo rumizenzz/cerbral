@@ -83,6 +83,60 @@ See [cerbral-desktop](https://github.com/rumizenzz/cerbral-desktop).
 - [ ] Linux AppImage + `.deb` + `.rpm`.
 - [ ] Flathub submission.
 
+## v0.4–v1.0 — the "truly personal AI" layer
+
+Everything that makes Cerbral feel like *your* AI specifically, as
+opposed to a generic chat assistant. Most of this is skills + hooks +
+memory structure on top of what's already shipped — no new engine
+required.
+
+- [ ] **Personalized session-start greeting.** `session_start` hook
+  reads `brain/memories/USER.md` + time-of-day + last-session summary.
+  Drops a greeting like "Good morning, Rumi. Yesterday you were
+  debugging the sync hook; the hourly mirror pushed 14 commits while
+  you slept."
+- [ ] **Time-aware context.** Detect morning / afternoon / evening /
+  late night from local clock. Infer "just woke up" from session-gap
+  heuristics (>6h since last turn + it's now 6–10am). Adjust tone
+  accordingly — crisp in the morning, warmer in the evening.
+- [ ] **Task recommendations on login.** A skill that reads recent
+  activity across your projects (git log of your repos,
+  `brain/memories/MEMORY.md` recent entries, pending TODOs in your
+  files) and proposes "what's next" at session start. Not pushy — a
+  collapsible suggestion block the user can ignore.
+- [ ] **Morning briefs (Routine).** Hermes supports scheduled routines.
+  At your configured wake time, Cerbral assembles: overnight agent
+  work summary, calendar snapshot (if integrated), unreplied
+  messages (if integrated), top 3 priorities distilled from MEMORY.md.
+  Delivered via notification, session, or email depending on
+  preference.
+- [ ] **Overnight agent mode (`cerbral agent daemon`).** User queues
+  tasks before bed ("draft these 3 emails, analyze this CSV, read
+  these arXiv papers and extract the methodology sections"). The
+  daemon runs Hermes in Auto mode with a task queue, reports results
+  in the morning brief. Built on the same `run_cerbral` subprocess
+  pattern the desktop app already uses.
+- [ ] **Sub-agent swarming (already spec'd, this milestone activates
+  it).** Cerbral Agent learns when to spawn Explore / Plan / Review
+  sub-agents based on task decomposition signals. Same pattern Claude
+  Code uses via its Agent tool, backed by Hermes's native
+  `delegation` toolset.
+- [ ] **Rich personal facts.** USER.md evolves a structured section:
+  name, pronouns, where they live, what they eat (dietary
+  restrictions, favorite cuisines), clothing preferences, media
+  taste, work rhythm. Agent asks gentle clarifying questions over
+  time rather than a big upfront form. Never pushed to the internet.
+- [ ] **Proactive recognition.** "Noticed you opened the PCC book
+  repo — want me to pick up where you left off yesterday?" Triggered
+  by file-system / git events the agent subscribes to via a watcher
+  skill.
+
+The architecture for all of this already exists. Hermes has skills,
+memory, hooks, routines, delegation. The brain repo has memories and
+USER.md. What's missing is a **well-curated set of skills that
+synthesize these primitives** into the experience of a truly personal
+AI. That's the v0.4→v1.0 work.
+
 ## v2.0+ — ecosystem depth (open-ended)
 
 - [ ] **In-app starter marketplace** — browse and install starter repos
