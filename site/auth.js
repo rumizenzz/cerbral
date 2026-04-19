@@ -201,7 +201,14 @@ export async function getProfile() {
   if (!user) return null;
   const { data, error } = await supabase
     .from('profiles')
-    .select('email, github_handle, brain_repo_url')
+    // Pulling the tunnel fields here (not a separate call) keeps
+    // Cerbral Web's boot to a single profile read. If the migration
+    // hasn't been applied yet, PostgREST returns the columns as null
+    // and the UI falls through to "brain not online" — no error.
+    .select(
+      'email, github_handle, brain_repo_url, ' +
+      'ollama_tunnel_url, ollama_tunnel_secret, ollama_tunnel_updated_at'
+    )
     .eq('user_id', user.id)
     .maybeSingle();
   if (error) {
