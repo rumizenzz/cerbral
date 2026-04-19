@@ -91,9 +91,22 @@ if git diff --cached --quiet; then
 fi
 
 SUMMARY="$(git diff --cached --stat | tail -1 | sed 's/^ *//')"
-COMMIT_MSG="brain: sync $(ts) — $SUMMARY"
+
+# Every Cerbral-driven commit carries:
+#   1. A visible "Committed by Cerbral" footer so readers of the log
+#      can see at a glance which commits the agent wrote.
+#   2. A Co-Authored-By trailer. When $CERBRAL_COAUTHOR_EMAIL maps to a
+#      verified email on a GitHub account (e.g. the Cerbral bot account's
+#      +cerbral@users.noreply.github.com), that account shows up on the
+#      repo's contributor list — same mechanism Claude Code uses.
+CERBRAL_COAUTHOR_NAME="${CERBRAL_COAUTHOR_NAME:-Cerbral}"
+CERBRAL_COAUTHOR_EMAIL="${CERBRAL_COAUTHOR_EMAIL:-noreply@cerbral.com}"
+
+HEADER="brain: sync $(ts) — $SUMMARY"
+COMMIT_MSG="$(printf '%s\n\n🔮 Committed by Cerbral — https://cerbral.com\n\nCo-Authored-By: %s <%s>\n' \
+  "$HEADER" "$CERBRAL_COAUTHOR_NAME" "$CERBRAL_COAUTHOR_EMAIL")"
 git commit -m "$COMMIT_MSG" >> "$LOG_FILE" 2>&1
-log "committed: $COMMIT_MSG"
+log "committed: $HEADER"
 
 if git rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' >/dev/null 2>&1; then
   if git push >> "$LOG_FILE" 2>&1; then
