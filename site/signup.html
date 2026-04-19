@@ -77,6 +77,7 @@
                 Continue with email
               </button>
             </form>
+            <div class="auth-error" id="auth-error" hidden role="alert"></div>
             <p class="auth-legal">
               By continuing you agree to Cerbral being
               <a href="https://github.com/rumizenzz/cerbral/blob/main/LICENSE">open-source MIT</a>
@@ -172,11 +173,28 @@
     const sentEmail = document.getElementById('sent-email');
     const resendBtn = document.getElementById('resend-btn');
     const enterCode = document.getElementById('enter-code-btn');
+    const errBox    = document.getElementById('auth-error');
 
     function showSent(email) {
       sentEmail.textContent = email;
       viewEmail.hidden = true;
       viewSent.hidden  = false;
+    }
+    function showError(msg) {
+      errBox.textContent = msg;
+      errBox.hidden = false;
+    }
+    function clearError() { errBox.hidden = true; errBox.textContent = ''; }
+
+    // Map Supabase error messages into something friendlier for end-users.
+    function friendly(err) {
+      const raw = err?.message || String(err || '');
+      const rate = raw.match(/only request this after (\d+) seconds/i);
+      if (rate) return `Just sent you one — try again in ${rate[1]}s.`;
+      if (/invalid.*email/i.test(raw))      return 'That email looks off — double-check and try again.';
+      if (/rate.?limit/i.test(raw))          return 'Too many attempts. Wait a minute, then try again.';
+      if (/network|fetch|offline/i.test(raw)) return 'Network issue — are you online?';
+      return raw || 'Something went wrong. Try again.';
     }
 
     // If the user is already signed in, skip straight to /onboard.
@@ -192,6 +210,7 @@
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      clearError();
       const email = document.getElementById('email').value.trim();
       if (!email) return;
       btn.disabled = true;
@@ -202,16 +221,17 @@
       } catch (err) {
         btn.disabled = false;
         btn.textContent = 'Continue with email';
-        alert('Sign-in error: ' + (err?.message || err));
+        showError(friendly(err));
       }
     });
 
     ghBtn.addEventListener('click', async () => {
+      clearError();
       ghBtn.disabled = true;
       try { await connectGitHub(); }
       catch (err) {
         ghBtn.disabled = false;
-        alert('GitHub sign-in error: ' + (err?.message || err));
+        showError(friendly(err));
       }
     });
 
@@ -231,7 +251,14 @@
       } catch (err) {
         resendBtn.disabled = false;
         resendBtn.textContent = orig;
-        alert('Resend failed: ' + (err?.message || err));
+        // Surface resend errors under the mailbox copy.
+        const notice = document.createElement('div');
+        notice.className = 'auth-error inline';
+        notice.textContent = friendly(err);
+        const existing = viewSent.querySelector('.auth-error');
+        if (existing) existing.remove();
+        viewSent.appendChild(notice);
+        setTimeout(() => notice.remove(), 5000);
       }
     });
 

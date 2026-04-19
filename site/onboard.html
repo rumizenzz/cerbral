@@ -63,6 +63,7 @@
       <button id="gh-connect" class="auth-btn auth-btn-github auth-btn-lg" type="button">
         Connect GitHub &amp; create my brain repo
       </button>
+      <div class="auth-error" id="onboard-error" hidden role="alert"></div>
       <p class="auth-small">
         Prefer to use an existing private repo? <a href="/docs/brain-repo">Read the brain-repo docs</a>.
       </p>
@@ -83,9 +84,15 @@
       }
     })();
 
+    const errBox = document.getElementById('onboard-error');
     document.getElementById('gh-connect').addEventListener('click', async () => {
+      errBox.hidden = true;
       try { await connectGitHub(); }
-      catch (err) { alert('GitHub connect error: ' + (err?.message || err)); }
+      catch (err) {
+        errBox.textContent = (err?.message || String(err || '')) ||
+          'Could not start GitHub sign-in. Please try again.';
+        errBox.hidden = false;
+      }
     });
   </script>
 </body>
