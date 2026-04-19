@@ -144,12 +144,27 @@
         return;
       }
 
-      // Need the GitHub provider_token to touch GitHub on the user's behalf.
-      if (!session.provider_token ||
-          session.user?.app_metadata?.provider !== 'github') {
+      // Need a GitHub provider_token to touch GitHub on the user's
+      // behalf. Don't require `app_metadata.provider === 'github'` —
+      // that field holds the PRIMARY provider, which stays 'email' even
+      // after a user links GitHub on top of an email-OTP sign-in. The
+      // provider_token alone is enough to call GitHub APIs.
+      const identities = session.user?.identities || [];
+      const hasGithubIdentity = identities.some((i) => i.provider === 'github');
+      if (!session.provider_token && !hasGithubIdentity) {
         showError(
           'github',
           'We need to connect GitHub to create your brain repo. Click Reconnect below.'
+        );
+        return;
+      }
+      // Linked but no provider_token in this session (common when GitHub
+      // was linked in a previous browser tab). Re-run OAuth so we get a
+      // fresh token we can actually call GitHub with.
+      if (!session.provider_token) {
+        showError(
+          'github',
+          'GitHub was linked earlier, but we need a fresh permission grant to create your brain repo. Click Reconnect below.'
         );
         return;
       }
