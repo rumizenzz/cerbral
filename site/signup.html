@@ -252,18 +252,47 @@
             <li>Lower queue times at peak load</li>
           </ul>
         </article>
+
+        <article class="plan-card">
+          <div class="plan-icon" aria-hidden="true">
+            <svg viewBox="0 0 60 60" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M30 4l7 14 15 2-11 11 3 15-14-7-14 7 3-15-11-11 15-2z"/>
+            </svg>
+          </div>
+          <h3 class="plan-name">Cerbral Cloud · Ultra</h3>
+          <p class="plan-sub">Power users, teams of one, always-on agents.</p>
+          <div class="plan-price"><span class="plan-dollar">$200</span><span class="plan-unit">/mo</span></div>
+          <p class="plan-note">Or $1,920/year · save 20%</p>
+          <a class="plan-btn" href="#top">Get Cerbral</a>
+          <p class="plan-commit">No surprise bills · hard caps · cancel anytime</p>
+          <p class="plan-features-title">Everything in Max, plus:</p>
+          <ul class="plan-features">
+            <li><strong>~60M tokens/mo</strong> (12× Pro, 2× Max) on default model</li>
+            <li><strong>$50 Boost credit</strong> for frontier models · Opus + GPT-Pro unrestricted</li>
+            <li><strong>500 GB Cerbral Cloud storage</strong></li>
+            <li>Dedicated inference slot · shortest queue at peak</li>
+            <li>Multi-day background agents · longest run budget</li>
+            <li>Earliest access to new Cerbral features before they hit Max</li>
+          </ul>
+        </article>
       </div>
 
       <p class="plans-footnote">
-        Cerbral Cloud uses open-weights models (Qwen3-class) as the
-        default backend so the $20 and $100 tiers are sustainable
-        without rate-limit roulette; frontier models are available via
-        a Boost credit pool per tier. Hard monthly caps — never a
-        surprise overage bill. Whatever you pay for, your conversations
-        and memories live in <em>your</em> GitHub brain-repo. Galactuz
-        never sees the contents. Pricing above is the planned launch
-        shape; final limits may shift slightly after 60 days of real
-        usage data.
+        <strong>Why these numbers hold up.</strong> Cerbral Cloud routes
+        by default to open-weights models (Qwen3-class) hosted on
+        Galactuz-managed GPUs, where token cost lands around $0.90 per
+        million blended — so $20 Pro's 5M token budget costs us ~$4.50,
+        leaving room for payment processing and margin. The Boost credit
+        pool is what lets users reach Claude Sonnet or GPT-Pro on
+        demand; those calls debit the pool at provider cost, so heavy
+        frontier use doesn't torch the margin on the base sub.  Storage
+        is the cheap part: at Cloudflare R2 rates ($0.015/GB/mo), the
+        10 GB / 100 GB / 500 GB quotas cost us $0.15, $1.50, and $7.50
+        per user per month — negligible next to compute.  Hard monthly
+        caps across every tier — never a surprise overage bill — same
+        framing Ollama uses for Turbo.  Whatever you pay for, your
+        conversations and memories stay in <em>your</em> GitHub
+        brain-repo; Galactuz never sees the contents.
       </p>
     </div>
   </section>
