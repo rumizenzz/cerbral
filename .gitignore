@@ -24,3 +24,6 @@ Thumbs.db
 
 # Supabase project-specific config (anon key + URL) — copied from config.sample.js
 site/config.js
+
+# Netlify CLI state (site link, local function build output)
+.netlify/
