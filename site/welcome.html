@@ -84,33 +84,112 @@
   <script type="module">
     import {
       getSession, ensureBrainRepo, saveProfile, buildDesktopHandoff,
+      connectGitHub,
     } from '/auth.js';
 
     const statusEl  = document.getElementById('status');
     const successEl = document.getElementById('success');
     const errorEl   = document.getElementById('error');
     const errMsgEl  = document.getElementById('error-message');
+    const retryBtn  = document.getElementById('retry-btn');
+
+    // Which step failed so "Try again" knows what to retry instead of
+    // always re-triggering the brain-repo step.
+    let failedStep = null;
+
+    /** Read GitHub-OAuth error params from BOTH query and hash (Supabase
+     *  puts them in the fragment, raw GitHub redirects put them in the
+     *  query string). */
+    function readOAuthError() {
+      const q = new URLSearchParams(window.location.search);
+      const h = new URLSearchParams(
+        (window.location.hash || '').replace(/^#/, '')
+      );
+      const err = q.get('error') || h.get('error');
+      if (!err) return null;
+      const desc = (q.get('error_description') || h.get('error_description') || '')
+        .replace(/\+/g, ' ');
+      return { code: err, desc };
+    }
+
+    function showError(step, message) {
+      failedStep = step;
+      statusEl.hidden = true;
+      successEl.hidden = true;
+      errMsgEl.textContent = message;
+      // Tailor the retry button label per step.
+      retryBtn.textContent =
+        step === 'github' ? 'Reconnect GitHub' :
+        step === 'session' ? 'Sign in again' :
+        'Try again';
+      errorEl.hidden = false;
+    }
 
     async function run() {
+      // Early exit: OAuth denied / cancelled. Don't even try ensureBrainRepo.
+      const oauthErr = readOAuthError();
+      if (oauthErr) {
+        const msg =
+          oauthErr.code === 'access_denied'
+            ? 'GitHub access was denied. Cerbral needs it to create your private brain repo — try again and approve.'
+            : `GitHub sign-in failed: ${oauthErr.desc || oauthErr.code}`;
+        showError('github', msg);
+        return;
+      }
+
       statusEl.textContent = 'Verifying your session…';
       const session = await getSession();
-      if (!session) { window.location.replace('/signup'); return; }
+      if (!session) {
+        showError('session', 'Your session expired. Sign in again.');
+        return;
+      }
 
-      statusEl.textContent = 'Creating your private brain repo…';
-      const { repo, created, user } = await ensureBrainRepo(session);
+      // Need the GitHub provider_token to touch GitHub on the user's behalf.
+      if (!session.provider_token ||
+          session.user?.app_metadata?.provider !== 'github') {
+        showError(
+          'github',
+          'We need to connect GitHub to create your brain repo. Click Reconnect below.'
+        );
+        return;
+      }
+
+      // Detect first — use idiomatic copy for each case (matches what
+      // ensureBrainRepo actually does under the hood).
+      statusEl.textContent = 'Checking your GitHub for cerbral-brain…';
+      let repo, created, user;
+      try {
+        ({ repo, created, user } = await ensureBrainRepo(session));
+      } catch (err) {
+        showError('repo', String(err?.message || err));
+        return;
+      }
+
+      statusEl.textContent = created
+        ? 'Created your private cerbral-brain ✓'
+        : 'Linked to your existing cerbral-brain ✓';
+
       document.getElementById('repo-url').textContent   = repo.full_name;
       document.getElementById('repo-url-2').textContent = repo.html_url;
       document.getElementById('step-repo').textContent  =
         created ? '✓ Brain repo' : '✓ Brain repo (existing)';
 
-      statusEl.textContent = 'Saving your profile…';
+      // Swap the "What just happened" line to reflect reality.
+      const repoFact = document.querySelector('.quick-facts li:nth-child(3)');
+      if (repoFact) {
+        repoFact.innerHTML = created
+          ? '<strong>Brain repo created</strong> at <code id="repo-url-2-later"></code>. Cerbral Cloud will never read it.'
+          : '<strong>Brain repo linked</strong> — you already had a <code id="repo-url-2-later"></code>, we just pointed Cerbral at it.';
+        const later = repoFact.querySelector('code');
+        if (later) later.textContent = repo.html_url;
+      }
+
       try {
         await saveProfile({
           githubHandle:  user.login,
           brainRepoUrl:  repo.html_url,
         });
       } catch (err) {
-        // Profile write is non-fatal for the handoff; log and continue.
         console.warn('profile upsert skipped:', err);
       }
 
@@ -126,16 +205,35 @@
 
     run().catch((err) => {
       console.error(err);
-      statusEl.hidden = true;
-      errMsgEl.textContent = String(err?.message || err);
-      errorEl.hidden = false;
+      showError('repo', String(err?.message || err));
     });
 
-    document.getElementById('retry-btn').addEventListener('click', () => {
+    retryBtn.addEventListener('click', async () => {
       errorEl.hidden = true;
       statusEl.hidden = false;
+      // Route the retry to the step that actually failed.
+      if (failedStep === 'github') {
+        statusEl.textContent = 'Reconnecting GitHub…';
+        try {
+          await connectGitHub();
+        } catch (err) {
+          showError('github', String(err?.message || err));
+        }
+        return;
+      }
+      if (failedStep === 'session') {
+        window.location.replace('/signup');
+        return;
+      }
+      // Clear stale error params from the URL so run() doesn't trip on
+      // them again.
+      if (window.location.search || window.location.hash) {
+        history.replaceState({}, '', '/welcome');
+      }
       statusEl.textContent = 'Retrying…';
-      run();
+      run().catch((err) => {
+        showError('repo', String(err?.message || err));
+      });
     });
   </script>
 </body>
