@@ -72,16 +72,54 @@
 
   <script src="/config.js" onerror="console.info('site/config.js not present yet.')"></script>
   <script type="module">
-    import { supabase, connectGitHub, getSession } from '/auth.js';
+    import { supabase, connectGitHub, getSession, getProfile, buildDesktopHandoff } from '/auth.js';
 
-    // If user arrived here without a session, bounce to /signup.
+    // Routing on /onboard is conditional on the user's existing state:
+    //
+    //   1. No session at all → bounce to /signup.
+    //   2. Already has a saved brain_repo_url in their profile → they've
+    //      done this before. Don't make them re-create. Jump straight to
+    //      /welcome, which idempotently "Links to existing cerbral-brain"
+    //      and lands them at the desktop handoff.
+    //   3. Session has a GitHub identity linked (even if primary provider
+    //      is 'email' because they signed up via email-OTP first) →
+    //      forward to /welcome; ensureBrainRepo() there will detect the
+    //      existing repo or create one, whichever fits.
+    //   4. First-time email-only user with no GitHub → show this page
+    //      so they can click "Connect GitHub".
+    //
+    // This fixes the "stuck in onboarding" bug where returning users
+    // with a pre-existing cerbral-brain kept seeing the "create my brain
+    // repo" step even though they already owned one. Cerbral Cloud
+    // doesn't own user data — detecting their existing brain and
+    // pointing the app at it is the right behavior.
     (async () => {
       const session = await getSession();
-      if (!session) window.location.replace('/signup');
-      // If the session already has a github provider token, skip straight to /welcome.
-      if (session?.provider_token && session?.user?.app_metadata?.provider === 'github') {
-        window.location.replace('/welcome');
+      if (!session) {
+        window.location.replace('/signup');
+        return;
       }
+
+      // #2 — already onboarded before. Fast-path to /welcome with no
+      // intermediate click. /welcome re-verifies + builds the desktop
+      // handoff URL.
+      try {
+        const profile = await getProfile();
+        if (profile?.brain_repo_url) {
+          window.location.replace('/welcome');
+          return;
+        }
+      } catch { /* profile lookup is best-effort */ }
+
+      // #3 — GitHub linked (primary OR secondary identity) OR provider
+      // token present. Either is enough to touch GitHub from /welcome.
+      const identities = session.user?.identities || [];
+      const hasGithubIdentity = identities.some((i) => i.provider === 'github');
+      if (session.provider_token || hasGithubIdentity) {
+        window.location.replace('/welcome');
+        return;
+      }
+      // #4 — fall through and show the "Connect GitHub" prompt below.
     })();
 
     const errBox = document.getElementById('onboard-error');

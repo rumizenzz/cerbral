@@ -140,6 +140,27 @@ export async function ensureBrainRepo(session, repoName = 'cerbral-brain') {
 }
 
 /**
+ * Read the user's Cerbral profile row. Returns null if the row doesn't
+ * exist yet (first-timer) OR if the profiles table isn't wired (which
+ * is a non-fatal degradation — callers can fall through to the usual
+ * GitHub detect-or-create flow).
+ */
+export async function getProfile() {
+  const user = await getUser();
+  if (!user) return null;
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('email, github_handle, brain_repo_url')
+    .eq('user_id', user.id)
+    .maybeSingle();
+  if (error) {
+    console.warn('getProfile skipped:', error);
+    return null;
+  }
+  return data || null;
+}
+
+/**
  * Upsert the user's Cerbral profile row (email, github_handle, brain_repo_url).
  * Requires a `profiles` table with RLS policies — see SUPABASE_SETUP.md.
  */
