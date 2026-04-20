@@ -344,6 +344,49 @@
       white-space: pre-wrap;
     }
     .msg.assistant .thinking-wrap.collapsed { display: none; }
+
+    /* Per-message speaker button (web). Hover-reveals beneath each
+       assistant bubble when the user has a voice set from the desktop
+       onboarding. Pulses orange while playing. */
+    .msg-actions {
+      display: flex;
+      gap: 0.4rem;
+      margin-top: 0.4rem;
+      opacity: 0;
+      transition: opacity 0.18s ease-out;
+    }
+    .msg.assistant:hover .msg-actions,
+    .msg-actions:focus-within,
+    .msg-actions .is-playing { opacity: 1; }
+    .msg-speak {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      padding: 0;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      color: var(--cb-subtle, #98928a);
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+    }
+    .msg-speak:hover {
+      background: color-mix(in srgb, var(--cb-accent, #ff6b35) 10%, transparent);
+      color: var(--cb-accent, #ff6b35);
+      border-color: color-mix(in srgb, var(--cb-accent, #ff6b35) 24%, transparent);
+    }
+    .msg-speak.is-playing {
+      color: var(--cb-accent, #ff6b35);
+      background: color-mix(in srgb, var(--cb-accent, #ff6b35) 16%, transparent);
+      border-color: var(--cb-accent, #ff6b35);
+      animation: msg-speak-pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes msg-speak-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--cb-accent, #ff6b35) 28%, transparent); }
+      50%      { box-shadow: 0 0 0 4px color-mix(in srgb, var(--cb-accent, #ff6b35) 0%,  transparent); }
+    }
     .msg.assistant .thinking-toggle {
       font-size: 0.72rem;
       color: var(--cb-subtle);
@@ -763,7 +806,12 @@
       writeBrainFile,
     } from '/auth.js?v=2';
 
-    const SYSTEM_PROMPT =
+    // Base character + mode. The per-user identity preamble (name +
+    // pronouns, chosen during the desktop first-boot ceremony) is
+    // prepended by buildSystemPrompt() once the profile loads — this
+    // is the same layering the desktop app uses so Cerbral answers
+    // on the web in the same voice it answers in the desktop app.
+    const BASE_SYSTEM_PROMPT =
       "You are Cerbral — the user's own personal local AI running on " +
       "their Mac.  They've opened Cerbral Code in the browser at " +
       "cerbral.com/code, and the request is streaming through a secure " +
@@ -788,6 +836,23 @@
       "Task-first: when the user says \"find a small todo and do it\", " +
       "locate it, propose the smallest patch that works, explain in " +
       "one paragraph why.";
+
+    function buildSystemPrompt() {
+      // Inject identity preamble when the user has completed the
+      // desktop first-boot ceremony (profile.cerbral_name is set).
+      // Same shape as the desktop's buildSystemPrompt identityPreamble
+      // so the model answers with consistent identity across surfaces.
+      const name = profile?.cerbral_name;
+      const pronouns = profile?.cerbral_pronouns || 'they/them';
+      const preamble = name
+        ? `<cerbral_identity>
+Your chosen name is ${name}. The user who set you up refers to you
+with ${pronouns} pronouns. Use ${name} when referring to yourself in
+the first person, and honour the pronouns they picked.
+</cerbral_identity>\n\n`
+        : '';
+      return preamble + BASE_SYSTEM_PROMPT;
+    }
 
     // ─── DOM refs ────────────────────────────────────────────────
     const appEl            = document.getElementById('app');
@@ -856,6 +921,116 @@
       s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
       s = s.replace(/\*([^*]+)\*/g, '<em>$1</em>');
       return s;
+    }
+
+    // ─── Voice playback (speechSynthesis) ────────────────────────
+    //
+    // Mirrors the desktop app's per-message speaker button, but uses
+    // the browser's built-in speechSynthesis API. The voice is picked
+    // to match the user's chosen voice_id / voice_gender from their
+    // Supabase profile — so if they set up Cerbral with "Samantha"
+    // on the desktop, and Safari has a "Samantha" system voice, the
+    // browser uses it. Otherwise falls back to a gender-matched
+    // voice in the user's locale. No audio at all for users who
+    // haven't completed the desktop onboarding (no voice to use).
+
+    let _webVoicesReady = null;
+    function ensureWebVoices() {
+      if (_webVoicesReady) return _webVoicesReady;
+      _webVoicesReady = new Promise((resolve) => {
+        const synth = window.speechSynthesis;
+        if (!synth) return resolve([]);
+        const have = synth.getVoices();
+        if (have.length) return resolve(have);
+        const handler = () => {
+          synth.removeEventListener('voiceschanged', handler);
+          resolve(synth.getVoices() || []);
+        };
+        synth.addEventListener('voiceschanged', handler);
+        setTimeout(() => resolve(synth.getVoices() || []), 800);
+      });
+      return _webVoicesReady;
+    }
+
+    function pickWebVoice(voices) {
+      if (!voices || !voices.length) return null;
+      const wanted = profile?.cerbral_voice_id || '';
+      const gender = profile?.cerbral_voice_gender || 'female';
+      // Try exact or partial name match first — e.g. "Samantha" maps
+      // to Safari's "Samantha" or "Samantha (Enhanced)" if present.
+      if (wanted) {
+        const exact = voices.find((v) => v.name === wanted);
+        if (exact) return exact;
+        const partial = voices.find((v) => v.name.toLowerCase().includes(wanted.toLowerCase()));
+        if (partial) return partial;
+      }
+      // Heuristic fallback: pick a gender-matched voice in the user's locale.
+      const femaleHint = /samantha|ava|allison|karen|victoria|moira|tessa|fiona|susan|serena|zoe/i;
+      const maleHint   = /alex|tom|fred|daniel|oliver|rishi|arthur|aaron|evan|ralph/i;
+      const pattern = gender === 'male' ? maleHint : femaleHint;
+      const lang = (navigator.language || 'en-US').split('-')[0];
+      const localeVoices = voices.filter((v) => v.lang.toLowerCase().startsWith(lang));
+      const byGender = localeVoices.find((v) => pattern.test(v.name));
+      return byGender || localeVoices[0] || voices[0] || null;
+    }
+
+    function textForTts(input) {
+      if (input && typeof input === 'object' && 'textContent' in input) {
+        return String(input.textContent || '').trim();
+      }
+      return String(input || '')
+        .replace(/```[\s\S]*?```/g, ' (code block) ')
+        .replace(/`([^`]+)`/g, '$1')
+        .replace(/\*\*([^*]+)\*\*/g, '$1')
+        .replace(/\*([^*]+)\*/g, '$1')
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+        .replace(/^#+\s+/gm, '')
+        .trim();
+    }
+
+    function mountSpeakButton(wrap) {
+      if (!wrap || wrap.querySelector('.msg-speak')) return;
+      // Only show for users who've done the desktop onboarding —
+      // that's the only time we know their chosen voice/pronouns.
+      if (!profile?.cerbral_voice_id) return;
+      const bubble = wrap.querySelector('.bubble');
+      if (!bubble) return;
+
+      const actions = document.createElement('div');
+      actions.className = 'msg-actions';
+      const btn = document.createElement('button');
+      btn.className = 'msg-speak';
+      btn.type = 'button';
+      btn.title = 'Speak this reply';
+      btn.setAttribute('aria-label', 'Speak this reply');
+      btn.innerHTML =
+        '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">' +
+        '<path fill="currentColor" d="M3 10v4h4l5 5V5L7 10H3zm13.5 2a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06c3 .91 5 3.74 5 6.96 0 3.22-2 6.05-5 6.96v2.06c4.14-.95 7-4.62 7-9.02S18.14 4.18 14 3.23z"/>' +
+        '</svg>';
+      btn.addEventListener('click', async () => {
+        const synth = window.speechSynthesis;
+        if (!synth) return;
+        if (btn.classList.contains('is-playing')) {
+          synth.cancel();
+          btn.classList.remove('is-playing');
+          return;
+        }
+        synth.cancel();
+        const text = textForTts(bubble);
+        if (!text) return;
+        const voices = await ensureWebVoices();
+        const voice = pickWebVoice(voices);
+        const u = new SpeechSynthesisUtterance(text);
+        if (voice) u.voice = voice;
+        u.rate  = 1.0;
+        u.pitch = 1.0;
+        u.onend   = () => btn.classList.remove('is-playing');
+        u.onerror = () => btn.classList.remove('is-playing');
+        btn.classList.add('is-playing');
+        synth.speak(u);
+      });
+      actions.appendChild(btn);
+      wrap.appendChild(actions);
     }
     function firstName() {
       const handle = profile?.github_handle;
@@ -969,13 +1144,19 @@
       wrap.className = 'msg ' + m.role;
       const r = document.createElement('div');
       r.className = 'role';
-      r.textContent = m.role === 'user' ? 'You' : 'Cerbral';
+      // Use the user's chosen Cerbral name if they've set one —
+      // otherwise fall back to the generic "Cerbral" label.
+      const aiLabel = profile?.cerbral_name || 'Cerbral';
+      r.textContent = m.role === 'user' ? 'You' : aiLabel;
       const b = document.createElement('div');
       b.className = 'bubble';
       b.innerHTML = tinyMd(scrub(m.content || ''));
       wrap.appendChild(r);
       wrap.appendChild(b);
       msgsEl.appendChild(wrap);
+      // Assistant bubbles for past turns (resumed session) also get
+      // the speaker button so the user can replay them.
+      if (m.role === 'assistant') mountSpeakButton(wrap);
       scrollToBottom();
       return wrap;
     }
@@ -984,7 +1165,7 @@
       wrap.className = 'msg assistant';
       const r = document.createElement('div');
       r.className = 'role';
-      r.textContent = 'Cerbral';
+      r.textContent = profile?.cerbral_name || 'Cerbral';
       const toggle = document.createElement('button');
       toggle.className = 'thinking-toggle';
       toggle.type = 'button';
@@ -1069,6 +1250,11 @@
           }
           if (obj.done) {
             sessionData.messages.push({ role: 'assistant', content });
+            // Mount the speaker button so the user can replay this
+            // reply in their Cerbral's voice (if they've completed
+            // the desktop onboarding).  No-op for users without a
+            // voice set, so this is safe to call unconditionally.
+            mountSpeakButton(assistant.wrap);
           }
         }
       }
@@ -1201,7 +1387,7 @@
       sessionData = {
         id, title: '', mode: 'code', model: 'qwen3:8b',
         created_at: now, updated_at: now,
-        messages: [{ role: 'system', content: SYSTEM_PROMPT }],
+        messages: [{ role: 'system', content: buildSystemPrompt() }],
       };
       sessionFile = `sessions/code/${id}.json`;
       sessionSha  = null;
