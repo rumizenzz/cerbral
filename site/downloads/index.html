@@ -9,8 +9,9 @@
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/auth.css">
   <style>
-    .dl-card { max-width: 560px; }
+    .dl-card { max-width: 620px; }
     .dl-card h1 { font-size: 1.6rem; letter-spacing: -0.01em; margin: 0.4rem 0 0.5rem; }
+    .dl-card h2 { font-size: 1.05rem; letter-spacing: -0.005em; margin: 1.6rem 0 0.5rem; }
     .dl-card .lede { color: var(--fg-muted, #555); line-height: 1.55; margin: 0.6rem 0 1.2rem; }
     .dl-stack { display: grid; gap: 0.55rem; padding: 1rem 1.15rem; border: 1px solid var(--rule, #e5dfd7); border-radius: 12px; background: var(--bg-card, #f7f2ed); margin: 1rem 0 1.4rem; }
     .dl-stack li { list-style: none; font-size: 0.92rem; display: flex; align-items: baseline; gap: 0.5rem; }
@@ -18,6 +19,36 @@
     .dl-small { font-size: 0.82rem; color: var(--fg-subtle, #999); margin-top: 1rem; }
     .dl-back { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--fg-muted, #666); text-decoration: none; font-size: 0.88rem; }
     .dl-back:hover { color: #ff6b35; }
+    /* Gatekeeper help block — every new user will hit macOS's
+       "not from an identified developer" dialog on first launch
+       until we register for the Apple Developer Program. Keeping
+       this prominent so nobody thinks Cerbral is broken. */
+    .dl-gatekeeper {
+      margin: 1.4rem 0;
+      padding: 1rem 1.15rem;
+      border: 1px solid #e6ccbe;
+      background: #fff5ee;
+      border-radius: 12px;
+    }
+    .dl-gatekeeper h2 { margin-top: 0; color: #d04a1a; }
+    .dl-gatekeeper p { margin: 0.4rem 0; font-size: 0.9rem; color: #553; line-height: 1.5; }
+    .dl-gatekeeper ol { margin: 0.4rem 0 0.4rem 1.2rem; padding: 0; }
+    .dl-gatekeeper ol li { margin: 0.3rem 0; font-size: 0.9rem; color: #553; line-height: 1.45; }
+    .dl-gatekeeper code, .dl-gatekeeper pre {
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 0.82rem;
+      background: #0a0607;
+      color: #f6ede9;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .dl-gatekeeper pre {
+      display: block;
+      padding: 0.7rem 0.9rem;
+      overflow-x: auto;
+      line-height: 1.45;
+      margin: 0.5rem 0;
+    }
   </style>
 </head>
 <body class="auth-page auth-minimal">
@@ -65,6 +96,37 @@
         there automatically. Every new version updates that link with no
         site-side change.
       </p>
+
+      <div class="dl-gatekeeper">
+        <h2>If macOS says "Cerbral OS Not Opened"</h2>
+        <p>
+          macOS's Gatekeeper blocks apps that aren't signed through the
+          paid Apple Developer Program. Cerbral is <strong>legitimate</strong>
+          — we just haven't registered yet. Here's the one-time unblock:
+        </p>
+        <ol>
+          <li>If you see the "Not Opened" dialog, click <strong>Done</strong>.</li>
+          <li>Make sure Cerbral OS is in your Applications folder.</li>
+          <li>Open Terminal and run (one line, paste-able):</li>
+        </ol>
+        <pre>sudo xattr -dr com.apple.quarantine "/Applications/Cerbral OS.app"</pre>
+        <p>
+          Enter your Mac password when asked. Then double-click
+          <strong>Cerbral OS</strong> from Applications and it will
+          launch normally. You only need to do this once per install —
+          updates replace the app in place.
+        </p>
+        <p class="dl-small">
+          <strong>Why this is needed:</strong> Apple charges $99/year for
+          the developer certificate that removes this prompt.
+          Galactuz will register once the Cerbral Cloud subscription
+          revenue earns it. Until then, every <code>.dmg</code> we ship
+          is unsigned but otherwise identical to what a signed build
+          would be. The source of the compiled binary is proprietary;
+          integrity of each release is verifiable by the SHA-256 on the
+          GitHub release page.
+        </p>
+      </div>
 
       <p class="dl-small">
         Cerbral OS is closed-source by Galactuz. The compiled
