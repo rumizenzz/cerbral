@@ -294,7 +294,9 @@ export async function getProfile() {
     // and the UI falls through to "brain not online" — no error.
     .select(
       'email, github_handle, brain_repo_url, ' +
-      'ollama_tunnel_url, ollama_tunnel_secret, ollama_tunnel_updated_at'
+      'ollama_tunnel_url, ollama_tunnel_secret, ollama_tunnel_updated_at, ' +
+      'cerbral_name, cerbral_pronouns, cerbral_voice_gender, ' +
+      'cerbral_voice_id, cerbral_narrator_voice_id, cerbral_onboarded_at'
     )
     .eq('user_id', user.id)
     .maybeSingle();
