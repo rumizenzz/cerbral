@@ -974,18 +974,40 @@ the first person, and honour the pronouns they picked.
       return byGender || localeVoices[0] || voices[0] || null;
     }
 
+    // Pronunciation fix: brand is spelled "Cerbral" but *spoken*
+    // "Cerebral" (cer-E-bral). Web Speech API engines guess wrong
+    // on the made-up spelling; the desktop app does the same
+    // substitution in the Rust kokoro-speak sidecar (see
+    // cerbral-desktop/kokoro-speak/src/main.rs `pronounce`). Keep
+    // these two tables in sync — any entry added here should also
+    // be added there so the voice sounds the same on both surfaces.
+    const PRONUNCIATION_MAP = [
+      ['Cerbral OS',    'Cerebral OS'],
+      ['Cerbral Cloud', 'Cerebral Cloud'],
+      ['Cerbral',       'Cerebral'],
+      ['cerbral',       'cerebral'],
+    ];
+    function applyPronunciation(s) {
+      let out = s;
+      for (const [k, v] of PRONUNCIATION_MAP) out = out.split(k).join(v);
+      return out;
+    }
+
     function textForTts(input) {
+      let raw;
       if (input && typeof input === 'object' && 'textContent' in input) {
-        return String(input.textContent || '').trim();
+        raw = String(input.textContent || '').trim();
+      } else {
+        raw = String(input || '')
+          .replace(/```[\s\S]*?```/g, ' (code block) ')
+          .replace(/`([^`]+)`/g, '$1')
+          .replace(/\*\*([^*]+)\*\*/g, '$1')
+          .replace(/\*([^*]+)\*/g, '$1')
+          .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+          .replace(/^#+\s+/gm, '')
+          .trim();
       }
-      return String(input || '')
-        .replace(/```[\s\S]*?```/g, ' (code block) ')
-        .replace(/`([^`]+)`/g, '$1')
-        .replace(/\*\*([^*]+)\*\*/g, '$1')
-        .replace(/\*([^*]+)\*/g, '$1')
-        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-        .replace(/^#+\s+/gm, '')
-        .trim();
+      return applyPronunciation(raw);
     }
 
     function mountSpeakButton(wrap) {
