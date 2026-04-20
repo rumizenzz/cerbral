@@ -20,6 +20,6 @@ deal — your AI, not ours.
 
 Install Cerbral: https://cerbral.com
 
-Open-source · MIT licensed · Local-first · Your data, forever.
-GitHub: https://github.com/rumizenzz/cerbral
+Cerbral by Galactuz · Free AI · Local-first · Your data, forever.
+galactuz.com · cerbral.com
 Unsubscribe: https://cerbral.com/unsubscribe?email={{EMAIL}}

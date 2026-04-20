@@ -2,23 +2,26 @@
 
 **Install and go. Now you have your own personal AI — specifically for you.**
 
-A self-improving, always-growing, open-source AI that learns with you, on
+A self-improving, always-growing personal AI that learns with you, on
 *your* machine, using *your* data, all of which you fully own forever.
 Already matured and ready to help you from the moment you install it — now
 it becomes uniquely yours as you use it. Like a mind you can carry between
 machines, never forgetting what it knows about your world.
 
-**No more subscriptions. No more paywalls. No more rate limits. No more
-being held hostage by the AI arms race.** Your personal AI runs on your
-machine, your data lives in your own GitHub repo, and nobody — not OpenAI,
-not Anthropic, not Google — owns any of it but you.
+**The AI itself is free.** Runs locally on your Mac; your conversations
+and memories live in your own GitHub brain-repo, not ours. Nobody — not
+OpenAI, not Anthropic, not Google — owns any of it but you. If you ever
+want extra compute or storage, **Cerbral Cloud** is an optional paid
+subscription on top (Pro $20, Max $100, Ultra $200); otherwise the free
+local experience is the whole product.
 
-Built on top of [Hermes Agent](https://github.com/NousResearch/hermes-agent)
-(the best open-source self-improving agent loop), powered by Git and
-GitHub for the persistence layer, running whatever local model you choose
-(or an API key if you want — your choice, the brain stays yours either way).
+Built on top of [Hermes Agent](https://github.com/NousResearch/hermes-agent),
+powered by Git and GitHub for the persistence layer, running whatever
+local model you choose (or Cerbral Cloud / the Galactuz API if you
+prefer — your choice, the brain stays yours either way).
 
-This is what AI was always meant to be: *your* AI, for *you*.
+This is what AI was always meant to be: *your* AI, for *you*. **Cerbral is
+by [Galactuz](https://galactuz.com).**
 
 ---
 
@@ -46,7 +49,7 @@ This is what AI was always meant to be: *your* AI, for *you*.
   everything in your full Cerbral. Even if local content gets pruned,
   your AI knows what's in the repo and fetches it on demand.
 
-Open-source · MIT licensed · Local-first · API-optional · Your data, forever.
+Cerbral by Galactuz · Free AI · Local-first · API-optional · Your data, forever.
 
 ---
 
@@ -89,14 +92,16 @@ time. Every conversation you have is training data they own and you don't.
 When a company pivots, raises prices, retires a model, or gets acquired,
 you have no recourse. Your "AI" was never yours.
 
-Open-source AI is how that gets inverted. Open weights have made the
+Personal AI is how that gets inverted. Open weights have made the
 models freely runnable. Hermes Agent has made the agent loop freely
 usable. What was missing was the persistence layer — the part that makes
 an AI actually *yours* over time. Cerbral is that layer: a thin,
-principled, install-and-go piece of infrastructure that turns the existing
-open-source pieces into a personal AI you own.
+principled, install-and-go piece of infrastructure that turns the
+running-locally pieces into a personal AI you own. Galactuz builds
+and ships it; the AI is free, and you only pay Galactuz if you choose
+to use Cerbral Cloud for extra compute or storage on top.
 
-Open-source AI is the future. Cerbral is what it looks like when you
+Personal AI is the future. Cerbral is what it looks like when you
 own the whole stack.
 
 ## Two modes: Chat and Cerbral Agent. Plus Projects.
@@ -205,24 +210,25 @@ Cerbral addresses it directly:
 Your local machine stays lean. Your AI's brain stays complete. Both are
 true at the same time.
 
-## What's open, what's yours
+## What Galactuz sees, what's yours
 
-- **Open (this repo):** the tool, the installer, the scripts, `PRINCIPLES`,
-  the starter-repo index. MIT licensed. Contribute freely.
-- **Yours (the private repo the installer creates on *your* GitHub):** your
-  brain. Skills, memories, knowledge, SOUL, INDEX. Never touches this
-  project's infrastructure. You own it. Fork, delete, migrate, whatever.
+- **Galactuz (tiny):** your email, GitHub handle, brain-repo URL, and a
+  payment method if you subscribe to Cerbral Cloud. That's the whole
+  list. Nothing else.
+- **Yours (the private repo the installer creates on *your* GitHub):**
+  your brain. Skills, memories, knowledge, SOUL, INDEX. Never touches
+  Galactuz infrastructure. You own it. Fork, delete, migrate, whatever.
 
-## What open source is for
+## What this is for
 
 AI shouldn't require a data center. Your knowledge shouldn't live on
 someone else's servers. The intelligence that works with you every day
 shouldn't be rented from a private company that can change the terms, lose
 your history, or disappear tomorrow.
 
-Cerbral inverts those assumptions. A local model, an open ecosystem, a
-personal knowledge base you own. No account. No permission. No one in the
-middle.
+Cerbral inverts those assumptions. A local model by default, a personal
+knowledge base you own, and an optional cloud tier if you want extras —
+not a forced dependency.
 
 **Your brain. Your repo. Your machine. Forever.**
 
@@ -230,22 +236,20 @@ middle.
 
 ## Project status
 
-**Alpha, actively developed.** v0.1 works today (install, running Hermes
-locally, brain mirroring to your repo, index generation, prune script,
-disaster recovery). v1.0 polish — richer installer UX, hardware-tier
-auto-detection, starter-repo ecosystem, update notifications — is in
-progress.
-
-Co-maintainers welcome. Starter knowledge repos, skills, and
-`manifest.json` PRs especially wanted.
+**Alpha, actively developed by Galactuz.** v0.1 works today (install,
+running Hermes locally, brain mirroring to your repo, index generation,
+prune script, disaster recovery). v1.0 polish — richer installer UX,
+hardware-tier auto-detection, starter-repo ecosystem, Cerbral Cloud
+tiers, update notifications — is in progress.
 
 ## Credits
 
-Cerbral is a synthesis. The real heavy lifting lives upstream:
+Cerbral is a synthesis, built by [Galactuz](https://galactuz.com). The
+real heavy lifting on the open parts of the stack lives upstream:
 
 - **[Hermes Agent](https://github.com/NousResearch/hermes-agent)** — Nous
-  Research, MIT licensed. The self-improving agent loop, skill system,
-  memory, MCP. Cerbral is a layer on top of this, not a replacement.
+  Research. The agent loop, skill system, memory, MCP. Cerbral is a
+  closed-source product built on top of this open foundation.
 - **[Ollama](https://ollama.com)** — local model inference with an
   OpenAI-compatible endpoint.
 - **Open-weight model teams** — Nous Research, Qwen, Meta, Mistral, and
@@ -253,4 +257,8 @@ Cerbral is a synthesis. The real heavy lifting lives upstream:
 
 ## License
 
-MIT. See `LICENSE`.
+**Proprietary. © Galactuz.** Cerbral is a closed-source product; this
+repository holds the public marketing site + docs only. Using Cerbral
+is free (as a user of the desktop app and Cerbral Cloud Free tier);
+redistributing the source is not permitted. See `galactuz.com` for
+terms of service.

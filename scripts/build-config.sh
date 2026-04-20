@@ -4,11 +4,12 @@
 # pulls secrets from Netlify's environment variable store into the
 # single client-side config file the static site reads on load.
 #
-# Why not commit site/config.js? It's .gitignored to keep public keys
-# out of the open-source repo. The SUPABASE_ANON_KEY is technically
-# safe to expose (RLS gates access), but we still don't ship it via
-# git — that way Cerbral's deployed config belongs to Netlify, and
-# anyone forking the repo can drop their own.
+# Why not commit site/config.js? It's .gitignored so the Supabase keys
+# aren't hard-coded into the cerbral-public repo (which holds the
+# marketing site). The SUPABASE_ANON_KEY is technically safe to expose
+# since RLS gates access, but keeping it out of git means our deployed
+# config belongs to Netlify, rotations don't require a code push, and
+# anyone else running their own fork drops their own.
 
 set -euo pipefail
 

@@ -1,7 +1,9 @@
 # Cerbral Principles
 
-These are the value commitments that define Cerbral. They constrain how the
-project evolves and what the tool is allowed to do.
+These are the value commitments that define Cerbral, and they constrain
+how the product evolves regardless of what Galactuz (the company
+behind Cerbral) would otherwise be tempted to do. They aren't style
+guidelines; they are the deal we're making with you.
 
 ## 1. Local-first. API keys supported as a first-class option. The brain is yours regardless of backend.
 
@@ -35,11 +37,21 @@ The tool talks to the internet only for:
 
 Nothing else. No usage tracking. No crash reports. No "anonymous" stats.
 
-## 4. MIT licensed.
+## 4. The AI is free. Forever.
 
-Same as Hermes Agent. No rug-pulls, no license changes later, no BUSL
-conversions. What you install today works the same way next year and the
-year after.
+Cerbral the local AI — the desktop app, local inference, brain-repo
+persistence to your own GitHub — is free to use and always will be.
+Galactuz funds the business through **Cerbral Cloud** (optional paid
+subscriptions for extra compute + storage) and the **Galactuz API**
+(usage-based inference for developers), not by gating the core
+product. No rug-pulls, no "we're moving the free tier behind a
+paywall" email six months from now. What you install today is the
+same deal next year and the year after.
+
+Closed-source doesn't mean locked-in. Your brain-repo is yours in
+your GitHub; if Galactuz disappears tomorrow, you still have every
+conversation, memory, and skill Cerbral learned about you, in plain
+Git-tracked files you can load into anything.
 
 ## 5. Honest marketing.
 
@@ -51,7 +63,8 @@ everything. Underclaim, overdeliver.
 
 ## 6. Transparent attribution.
 
-Cerbral is a synthesis on top of other people's work. The README credits:
+Cerbral is a closed-source product built on top of open foundations.
+The README credits them plainly:
 
 - **Hermes Agent** (Nous Research, MIT) — the self-improving agent loop,
   skill system, memory system, MCP integration.
@@ -59,8 +72,10 @@ Cerbral is a synthesis on top of other people's work. The README credits:
 - **Open-weight model authors** (Nous Research, Qwen team, Meta, Mistral,
   etc.) — the actual models.
 
-Cerbral adds the Git-backed brain layer and the install-and-go packaging.
-It does not pretend to have invented what it didn't invent.
+Galactuz (Cerbral's parent company) adds the Git-backed brain layer,
+the install-and-go packaging, Cerbral Cloud infrastructure, and the
+product UX. It does not pretend to have invented what it didn't
+invent.
 
 ---
 

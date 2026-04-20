@@ -14,5 +14,5 @@ Didn't request this? You can safely ignore this email. The link
 expires in 1 hour and can only be used once.
 
 --
-Cerbral — your own open-source personal AI.
-cerbral.com · github.com/rumizenzz/cerbral
+Cerbral by Galactuz — your own personal AI.
+cerbral.com · galactuz.com
