@@ -63,7 +63,9 @@ What's live today:
 
 ## v1.0 — desktop app foundation (4–8 weeks)
 
-See [cerbral-desktop](https://github.com/rumizenzz/cerbral-desktop).
+Desktop app source is closed — Cerbral OS is proprietary by Galactuz.
+Public distributions (.dmg) live at
+[cerbral-releases](https://github.com/rumizenzz/cerbral-releases).
 
 - [x] Tauri v2 scaffold (shipped).
 - [ ] **Menu bar app** with status + quick actions (sync, prune,
@@ -345,8 +347,8 @@ Open an issue before starting anything non-trivial.
 
 - Public repo: https://github.com/rumizenzz/cerbral
 - Private brain (example): https://github.com/rumizenzz/cerbral-brain
-- Desktop app: https://github.com/rumizenzz/cerbral-desktop
-- Landing page: https://cerbral.netlify.app
+- Desktop app releases (public): https://github.com/rumizenzz/cerbral-releases — source is closed by Galactuz
+- Landing page: https://cerbral.com
 - Principles: [PRINCIPLES.md](./PRINCIPLES.md)
 
-Updated 2026-04-18.
+Updated 2026-04-20.

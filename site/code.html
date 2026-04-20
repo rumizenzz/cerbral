@@ -977,10 +977,10 @@ the first person, and honour the pronouns they picked.
     // Pronunciation fix: brand is spelled "Cerbral" but *spoken*
     // "Cerebral" (cer-E-bral). Web Speech API engines guess wrong
     // on the made-up spelling; the desktop app does the same
-    // substitution in the Rust kokoro-speak sidecar (see
-    // cerbral-desktop/kokoro-speak/src/main.rs `pronounce`). Keep
-    // these two tables in sync — any entry added here should also
-    // be added there so the voice sounds the same on both surfaces.
+    // substitution in its Rust kokoro-speak sidecar (closed-source
+    // repo — same `pronounce()` table mirrored here). Keep these
+    // two tables in sync: any entry added here should also be
+    // added there so the voice sounds the same on both surfaces.
     const PRONUNCIATION_MAP = [
       ['Cerbral OS',    'Cerebral OS'],
       ['Cerbral Cloud', 'Cerebral Cloud'],

@@ -247,9 +247,15 @@ force = false
 # cerbral-public change needed per-release. If we ever move the build
 # off GitHub and drop a .dmg directly into site/downloads/, `force =
 # false` means the site-hosted copy wins automatically.
+#
+# The target repo is `cerbral-releases` (public), NOT `cerbral-desktop`
+# (private, closed-source). Same pattern Anthropic uses for Claude
+# Desktop — private source, public distribution. Releases have to be
+# in a public repo or `/releases/latest/download/...` 404s for
+# unauthenticated users.
 [[redirects]]
 from = "/downloads/Cerbral.dmg"
-to = "https://github.com/rumizenzz/cerbral-desktop/releases/latest/download/Cerbral.dmg"
+to = "https://github.com/rumizenzz/cerbral-releases/releases/latest/download/Cerbral.dmg"
 status = 302.0
 force = false
 
